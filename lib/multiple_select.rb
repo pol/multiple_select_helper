@@ -10,7 +10,7 @@ module FightTheMelons #:nodoc:
       include ActionView::Helpers::FormTagHelper
       include ActionView::Helpers::TagHelper
       
-      # Returns a list of checkboxes usign
+      # Returns a list of checkboxes using
       # checkboxes_from_collection_for_multiple_select to generate the list of
       # checkboxes.
       #
@@ -19,7 +19,20 @@ module FightTheMelons #:nodoc:
       #
       # The option <tt>:outer_class</tt> specifies the HTML class of the div
       # element that wraps the checkbox list.
-      def collection_multiple_select(name, collection, value_method, text_method, options = {})
+      def collection_multiple_select(object, method, collection, value_method, text_method, options = {})
+        collection_multiple_select_tag("#{object}[#{method}]", collection, value_method, text_method, options)
+      end
+      
+      # Returns a list of checkboxes using
+      # checkboxes_from_collection_for_multiple_select to generate the list of
+      # checkboxes.
+      #
+      # If a <tt>:selected_items</tt> option is provided it will be used as
+      # selection.
+      #
+      # The option <tt>:outer_class</tt> specifies the HTML class of the div
+      # element that wraps the checkbox list.
+      def collection_multiple_select_tag(name, collection, value_method, text_method, options = {})
         selected_items = (options[:selected_items] || [])
         outer_class = options[:outer_class]
         
@@ -38,7 +51,19 @@ module FightTheMelons #:nodoc:
       #
       # The option <tt>:outer_class</tt> specifies the HTML class of the div
       # element that wraps the checkbox list.
-      def multiple_select(name, container, options = {})
+      def multiple_select(object, method, container, options = {})
+        multiple_select_tag("#{object}[#{method}]", container, options)
+      end
+      
+      # Create a list of checkboxes. See checkboxes_for_multiple_select for the
+      # required format of the choices parameter.
+      #
+      # If a <tt>:selected_items</tt> option is provided it will be used as
+      # selection.
+      #
+      # The option <tt>:outer_class</tt> specifies the HTML class of the div
+      # element that wraps the checkbox list.
+      def multiple_select_tag(name, container, options = {})
         selected_items = (options[:selected_items] || [])
         outer_class = options[:outer_class]
         
@@ -49,7 +74,8 @@ module FightTheMelons #:nodoc:
         content_tag('div', checkboxes, :class => outer_class)
       end
       
-      # Create a list of hierarchical checkboxes.
+      # Create a list of hierarchical checkboxes for the provides object and
+      # method.
       # The hierarchy must respond to <tt>:child_method</tt> to get the direct
       # children of the actual node. The default value is <tt>children</tt>.
       #
@@ -58,7 +84,21 @@ module FightTheMelons #:nodoc:
       #
       # The option <tt>:outer_class</tt> specifies the HTML class of the div
       # element that wraps the checkbox hierarchy.
-      def tree_multiple_select(name, nodes, value_method, text_method, options = {})
+      def tree_multiple_select(object, method, nodes, value_method, text_method, options = {})
+        tree_multiple_select_tag("#{object}[#{method}]", nodes, value_method, text_method, options)
+      end
+      
+      # Create a list of hierarchical checkboxes for the provides object and
+      # method.
+      # The hierarchy must respond to <tt>:child_method</tt> to get the direct
+      # children of the actual node. The default value is <tt>children</tt>.
+      #
+      # If a <tt>:selected_items</tt> option is provided it will be used as
+      # selection.
+      #
+      # The option <tt>:outer_class</tt> specifies the HTML class of the div
+      # element that wraps the checkbox hierarchy.
+      def tree_multiple_select_tag(name, nodes, value_method, text_method, options = {})
         selected_items = (options[:selected_items] || [])
         outer_class = options[:outer_class]
         
@@ -125,10 +165,10 @@ module FightTheMelons #:nodoc:
         child_options[:initial_alternate] = !alt if alternate
         
         checkboxes_from_tree = nodes.map do |node|
-          parent = checkboxes_for_multiple_select(
+          parent = checkbox_for_multiple_select(
             name,
-            [[node.send(text_method), node.send(value_method)]],
-            selected_items, root_options
+            [node.send(text_method), node.send(value_method)],
+            selected_items, alt, root_options
           )
           
           children = node.send(child_method)
@@ -158,54 +198,84 @@ module FightTheMelons #:nodoc:
       # values and the "first" as label text. Hashes are turned into this form
       # automatically, so the keys beceome "first" and the values become
       # "lasts". If <tt>selected_items</item> is not empty, the matching
-      # elements will get the selected attribute in its checkbox. If the option
-      # <tt>:label_position</tt> is provided the specified position is used
-      # (<tt>:left</tt> or <tt>:right</tt>), otherwise the default
-      # <tt>:right</tt> position is used.
+      # elements will get the selected attribute in its checkbox.
       #
-      # The <tt>:inner_class</tt> option specifies the base class of the div that
-      # surrounds the checkbox and the label.
-      #
-      # The <tt>:alternate_class</tt> option allow to specify
-      # a additional class that will be used in odd elements if
-      # <tt>:alternate</tt> is <tt>true</tt>.
+      # The <tt>:alternate</tt> option determines if the classes of the items
+      # should alternate. The default value for <tt>:alternate</tt> is
+      # <tt>false</tt>.
       #
       # The <tt>:initial_alternate</tt> option specifies if the first element
       # should have the alternate style or not. By default the first element
       # does not have the alternate style.
       def checkboxes_for_multiple_select(name, container, selected_items = [], options = {})
         container = container.to_a if Hash === container
-        position = (options[:position] or :right)
-        inner_class = options[:inner_class]
         alternate = (options[:alternate] or false)
-        alternate_class = (options[:alternate_class] or 'alt') if alternate
-        alt = (options[:initial_alternate] or false) if alternate
+        alt = (options[:initial_alternate] or false)
         
         checkboxes_for_multiple_select = container.map do |item|
-          if !item.is_a?(String) and item.respond_to?(:first) and item.respond_to?(:last)
-            is_selected = selected_items.include?(item.last)
-            item_id = html_escape("#{name}#{item.last}")
-            cbt = check_box_tag("#{name}[]", html_escape(item.last.to_s), is_selected, :id => item_id)
-            lbt = content_tag('label', html_escape(item.first.to_s), :for => item_id)
-          else
-          	is_selected = selected_items.include?(item)
-            item_id = html_escape("#{name}#{item.to_s}")
-            cbt = check_box_tag("#{name}[]", html_escape(item.to_s), is_selected, :id => item_id)
-            lbt = content_tag('label', html_escape(item.to_s), :for => item_id)
-           end
-           
-           if alternate
-             item_class = alt ? "#{inner_class} #{alternate_class}".strip : inner_class
-             alt = !alt
-           else
-             item_class = inner_class
-           end
-           
-           content_tag('div', position == :left ? lbt + cbt : cbt + lbt, :class => item_class)
-         end
-         
-         checkboxes_for_multiple_select.join("\n")
-       end
+          cbfms = checkbox_for_multiple_select(name, item, selected_items, alt, options)
+          alt = !alt if alternate
+          cbfms
+        end
+        
+        checkboxes_for_multiple_select.join("\n")
+      end
+      
+      # Accepts an item and returns a checkbox tag. If the item respond to first
+      # and last (such a two element array), the "last" serve as checkbox value
+      # and the "first" as label text. If the item is included in the
+      # <tt>selected_items</tt> its checkbox will be selected. The
+      # <tt>is_alternate</tt> determines if the checkbox will use the alternate
+      # class name or not.
+      #
+      # If the option <tt>:position</tt> is provided the specified
+      # position is used (<tt>:left</tt> or <tt>:right</tt>), otherwise the
+      # default <tt>:right</tt> position is used.
+      #
+      # The <tt>:inner_class</tt> option specifies the base class of the div that
+      # surrounds the checkbox and the label.
+      #
+      # The <tt>:alternate_class</tt> option allow to specify
+      # a additional class that will be used in the element if
+      # <tt>is_alternate</tt> is <tt>true</tt>.
+      #
+      # The <tt>:disabled</tt> option specifies if the checkbox will be rendered
+      # disabled or not. By default the checkbox will not be disabled.
+      def checkbox_for_multiple_select(name, item, selected_items = [], is_alternate = false, options = {})
+        position = (options[:position] or :right)
+        inner_class = options[:inner_class]
+        alternate_class = (options[:alternate_class] or 'alt')
+        disabled = (options[:disabled] or false)
+        
+        if !item.is_a?(String) and item.respond_to?(:first) and item.respond_to?(:last)
+          is_selected = selected_items.include?(item.last)
+          item_id = idfy("#{name}#{item.last}")
+          cbt = check_box_tag("#{name}[]", html_escape(item.last.to_s), is_selected, :id => item_id, :disabled => disabled)
+          lbt = content_tag('label', html_escape(item.first.to_s), :for => item_id)
+        else
+          is_selected = selected_items.include?(item)
+          item_id = idfy("#{name}#{item.to_s}")
+          cbt = check_box_tag("#{name}[]", html_escape(item.to_s), is_selected, :id => item_id, :disabled => disabled)
+          lbt = content_tag('label', html_escape(item.to_s), :for => item_id)
+        end
+        
+        item_class = is_alternate ? "#{inner_class} #{alternate_class}".strip : inner_class
+        
+        content_tag('div', position == :left ? lbt + cbt : cbt + lbt, :class => item_class)
+      end
+      
+    private
+      # Convert the string <tt>name</tt> provided into a HTML 4.01 valid
+      # identifier. If <tt>name</tt> does not start with a letter it will be
+      # prepend an 'x' character. All characters outside the posible characters
+      # for a HTML identifier are replaced by an underscore ("_"). The only
+      # valid characters are letters, digits, hyphens ("-"), underscores ("_"),
+      # colons (":") and periods ("."). See
+      # http://www.w3.org/TR/html4/types.html#type-name for more information.
+      def idfy(name)
+        name = 'x' + name unless /^[a-zA-Z]/ =~ name
+        name.scan(/[-a-zA-Z0-9_:.]+/).join('_')
+      end
     end
   end
 end
