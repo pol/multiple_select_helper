@@ -211,7 +211,8 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
   def test_mst
     assert_dom_equal "<div><div>" +
       "<input id=\"nametest\" name=\"name[]\" type=\"checkbox\" value=\"test\" />" +
-      "<label for=\"nametest\">test</label></div></div>",
+      "<label for=\"nametest\">test</label></div>" +
+      "<input name='name' type='hidden' value='' /></div>",
       multiple_select_tag('name', ['test'])
   end
   
@@ -221,16 +222,25 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       "<label for=\"nametest1\">test1</label></div>\n" +
       "<div>" +
       "<input id=\"nametest2\" name=\"name[]\" type=\"checkbox\" value=\"test2\" />" +
-      "<label for=\"nametest2\">test2</label></div></div>",
+      "<label for=\"nametest2\">test2</label></div>" +
+      "<input name='name' type='hidden' value='' /></div>",
       multiple_select_tag('name', ['test1', 'test2'], :selected_items => ['test1'])
   end
   
   def test_mst_outer_class
     assert_dom_equal "<div class=\"testclass\"><div>" +
       "<input id=\"nametest\" name=\"name[]\" type=\"checkbox\" value=\"test\" />" +
-      "<label for=\"nametest\">test</label></div></div>",
+      "<label for=\"nametest\">test</label></div>" +
+      "<input name='name' type='hidden' value='' /></div>",
       multiple_select_tag('name', ['test'], :outer_class => 'testclass')
   end
+  
+  def test_mst_empty_tree
+    assert_dom_equal "<div>" +
+      "<input name='name' type='hidden' value='' /></div>",
+      multiple_select_tag('name', [])
+  end
+
   
   def test_cmst
     assert_dom_equal "<div><div>" +
@@ -239,7 +249,8 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       "<div><input id=\"name3\" name=\"name[]\" type=\"checkbox\" value=\"3\" />" +
       "<label for=\"name3\">Node 2</label></div>\n" +
       "<div><input id=\"name4\" name=\"name[]\" type=\"checkbox\" value=\"4\" />" +
-      "<label for=\"name4\">Node 3</label></div></div>",
+      "<label for=\"name4\">Node 3</label></div>" +
+      "<input name='name' type='hidden' value='' /></div>",
       collection_multiple_select_tag('name', Node.find_all_by_parent_id(1), :id, :name)
   end
   
@@ -250,7 +261,8 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       "<div><input id=\"name3\" name=\"name[]\" type=\"checkbox\" value=\"3\" />" +
       "<label for=\"name3\">Node 2</label></div>\n" +
       "<div><input checked=\"checked\" id=\"name4\" name=\"name[]\" type=\"checkbox\" value=\"4\" />" +
-      "<label for=\"name4\">Node 3</label></div></div>",
+      "<label for=\"name4\">Node 3</label></div>" +
+      "<input name='name' type='hidden' value='' /></div>",
       collection_multiple_select_tag('name', Node.find_all_by_parent_id(1), :id, :name, :selected_items => [2, 4])
   end
   
@@ -261,9 +273,17 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       "<div><input id=\"name3\" name=\"name[]\" type=\"checkbox\" value=\"3\" />" +
       "<label for=\"name3\">Node 2</label></div>\n" +
       "<div><input id=\"name4\" name=\"name[]\" type=\"checkbox\" value=\"4\" />" +
-      "<label for=\"name4\">Node 3</label></div></div>",
+      "<label for=\"name4\">Node 3</label></div>" +
+      "<input name='name' type='hidden' value='' /></div>",
       collection_multiple_select_tag('name', Node.find_all_by_parent_id(1), :id, :name, :outer_class => 'testclass')
   end
+  
+  def test_cmst_empty_tree
+    assert_dom_equal "<div>" +
+      "<input name='name' type='hidden' value='' /></div>",
+      collection_multiple_select_tag('name', nodes(:n33).children, :id, :name)
+  end
+
   
   def test_tmst
     assert_dom_equal "<div><div>" +
@@ -272,7 +292,8 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       "<label for=\"name11\">Node 3.2.1</label></div>\n" +
       "<div><input id=\"name12\" name=\"name[]\" " +
       "type=\"checkbox\" value=\"12\" />" +
-      "<label for=\"name12\">Node 3.2.2</label></div></div>",
+      "<label for=\"name12\">Node 3.2.2</label></div>" +
+      "<input name='name' type='hidden' value='' /></div>",
       tree_multiple_select_tag('name', nodes(:n32).children, :id, :name)
   end
   
@@ -283,7 +304,8 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       "<label for=\"name11\">Node 3.2.1</label></div>\n" +
       "<div><input id=\"name12\" name=\"name[]\" " +
       "type=\"checkbox\" value=\"12\" />" +
-      "<label for=\"name12\">Node 3.2.2</label></div></div>",
+      "<label for=\"name12\">Node 3.2.2</label></div>" +
+      "<input name='name' type='hidden' value='' /></div>",
       tree_multiple_select_tag('name', nodes(:n32).children, :id, :name, :selected_items => [11])
   end
   
@@ -294,14 +316,23 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       "<label for=\"name11\">Node 3.2.1</label></div>\n" +
       "<div><input id=\"name12\" name=\"name[]\" " +
       "type=\"checkbox\" value=\"12\" />" +
-      "<label for=\"name12\">Node 3.2.2</label></div></div>",
+      "<label for=\"name12\">Node 3.2.2</label></div>" +
+      "<input name='name' type='hidden' value='' /></div>",
       tree_multiple_select_tag('name', nodes(:n32).children, :id, :name, :outer_class => 'testclass')
   end
+  
+  def test_tmst_empty_tree
+    assert_dom_equal "<div>" +
+      "<input name='name' type='hidden' value='' /></div>",
+      tree_multiple_select_tag('name', nodes(:n33).children, :id, :name)
+  end
+
   
   def test_ms
     assert_dom_equal "<div><div>" +
       "<input id=\"object_method_test\" name=\"object[method][]\" type=\"checkbox\" value=\"test\" />" +
-      "<label for=\"object_method_test\">test</label></div></div>",
+      "<label for=\"object_method_test\">test</label></div>" +
+      "<input name='object[method]' type='hidden' value='' /></div>",
       multiple_select('object', 'method', ['test'])
   end
   
@@ -315,7 +346,8 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       "<label for=\"object_method_3\">Node 2</label></div>\n" +
       "<div><input id=\"object_method_4\" name=\"object[method][]\" " +
       "type=\"checkbox\" value=\"4\" />" +
-      "<label for=\"object_method_4\">Node 3</label></div></div>",
+      "<label for=\"object_method_4\">Node 3</label></div>" +
+      "<input name='object[method]' type='hidden' value='' /></div>",
       collection_multiple_select('object', 'method', Node.find_all_by_parent_id(1), :id, :name)
   end
   
@@ -326,15 +358,11 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       "<label for=\"object_method_11\">Node 3.2.1</label></div>\n" +
       "<div><input id=\"object_method_12\" name=\"object[method][]\" " +
       "type=\"checkbox\" value=\"12\" />" +
-      "<label for=\"object_method_12\">Node 3.2.2</label></div></div>",
+      "<label for=\"object_method_12\">Node 3.2.2</label></div>" +
+      "<input name='object[method]' type='hidden' value='' /></div>",
       tree_multiple_select('object', 'method', nodes(:n32).children, :id, :name)
   end
-  
-  def test_tms_empty_tree
-    assert_dom_equal "<div></div>",
-      collection_multiple_select('object', 'method', nodes(:n33).children, :id, :name)
-  end
-  
+    
   def test_cftfms
     assert_dom_equal "<div>" +
       "<input id=\"name8\" name=\"name[]\" type=\"checkbox\" value=\"8\" />" +

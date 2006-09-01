@@ -38,7 +38,7 @@ module FightTheMelons #:nodoc:
         
         checkboxes = checkboxes_from_collection_for_multiple_select(
           name, collection, value_method, text_method, selected_items, options
-        )
+        )  + hidden_field_tag(name, '', :id => nil)
         
         content_tag('div', checkboxes, :class => outer_class)
       end
@@ -69,7 +69,7 @@ module FightTheMelons #:nodoc:
         
         checkboxes = checkboxes_for_multiple_select(
           name, container, selected_items, options
-        )
+        ) + hidden_field_tag(name, '', :id => nil)
         
         content_tag('div', checkboxes, :class => outer_class)
       end
@@ -104,7 +104,7 @@ module FightTheMelons #:nodoc:
         
         checkboxes = checkboxes_from_tree_for_multiple_select(
           name, nodes, value_method, text_method, selected_items, options
-        )
+        ) + hidden_field_tag(name, '', :id => nil)
         
         content_tag('div', checkboxes, :class => outer_class)
       end
