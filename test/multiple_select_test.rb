@@ -184,6 +184,34 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       checkboxes_for_multiple_select('name', ['test1', 'test2'], [], :alternate => true, :initial_alternate => true)
   end
   
+  def test_cfms_disabled
+    assert_dom_equal "<div>" +
+      "<input id=\"name1\" name=\"name[]\" type=\"checkbox\" value=\"1\" />" +
+      "<label for=\"name1\">1</label></div>\n" +
+      "<div>" +
+      "<input id=\"name2\" name=\"name[]\" type=\"checkbox\" value=\"2\" />" +
+      "<label for=\"name2\">2</label></div>",
+      checkboxes_for_multiple_select('name', [1, 2], [], :disabled => false)
+    assert_dom_equal "<div>" +
+      "<input disabled=\"disabled\" id=\"name1\" name=\"name[]\" " +
+      "type=\"checkbox\" value=\"1\" />" +
+      "<label for=\"name1\">1</label></div>\n" +
+      "<div>" +
+      "<input disabled=\"disabled\" id=\"name2\" name=\"name[]\" " +
+      "type=\"checkbox\" value=\"2\" />" +
+      "<label for=\"name2\">2</label></div>",
+      checkboxes_for_multiple_select('name', [1, 2], [], :disabled => true)
+    assert_dom_equal "<div>" +
+      "<input disabled=\"disabled\" id=\"name1\" name=\"name[]\" " +
+      "type=\"checkbox\" value=\"1\" />" +
+      "<label for=\"name1\">1</label></div>\n" +
+      "<div>" +
+      "<input id=\"name2\" name=\"name[]\" " +
+      "type=\"checkbox\" value=\"2\" />" +
+      "<label for=\"name2\">2</label></div>",
+      checkboxes_for_multiple_select('name', [1, 2], [], :disabled => [1])
+  end
+  
   def test_cfcfms
     assert_dom_equal "<div>" +
       "<input id=\"name2\" name=\"name[]\" type=\"checkbox\" value=\"2\" />" +

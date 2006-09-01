@@ -15,25 +15,47 @@ fields) where a "add and remove" solution will be cumbersome.
 
 You can download this plugin at:
 
-http://svn.ruido-blanco.net/multiple_select/trunk
+http://svn.ruido-blanco.net/multiple_select/branches/object-method-parameters
 
 You can find this information at:
 
 http://ruido-blanco.net/blog/rails-multiple-select-helper-plugin/
 
+== A note of warning
+
+This plugin also modifies +has_many+ and +has_and_belongs_to_many+ associations
+so they include a new method called +#collection_singular_ids+ (where
++collection_singular+ is the singular name of the collection) that mirrors the
+already existing +#collection_singular_ids=+. This method allows the programmer
+write less code and less errors (see the example at the end of the next
+section). This method has been rejected as a patch once in Rails codebase
+(http://dev.rubyonrails.org/ticket/2917) and there is another patch waiting
+with another implementation (http://dev.rubyonrails.org/ticket/5780).
+
+I don't know why Rails developers allows writing ids but not reading them, it
+seems a like ilogical to me but its their framework. I saying this because the
+method seems useful (and not dangerous) so if another developer implements it in
+a plugin and you install both mine and his/her, things may go wrong.
+
 == Using Multiple Select Helper
 
-There are 3 pairs of functions that you can use depending of the source of your
+There are 3 tuples of functions that you can use depending of the source of your
 data:
 
-- +multiple_select+ (and +checkboxes_for_multiple_select+): With arrays, hashes
+- +multiple_select+ (and +multiple_select_tag+ and
+  +checkboxes_for_multiple_select+): With arrays, hashes
   or your own classes (implementing first and last in them).
-- +collection_multiple_select+
-  (and +checkboxes_from_collection_for_multiple_select+): With arrays of classes
+- +collection_multiple_select+ (and +collection_multiple_select_tag+ and
+  +checkboxes_from_collection_for_multiple_select+): With arrays of classes
   using +text_method+ and +value_method+ to access the data in the instances.
-- +tree_multiple_select+ (and +checkboxes_from_tree_for_multiple_select+): With
+- +tree_multiple_select+ (and +tree_multiple_select_tag+ and
+  +checkboxes_from_tree_for_multiple_select+): With
   tree-like structures (like ActiveRecord's +acts_as_tree+) using +text_method+
   and +value_method+ to access the data in the instances.
+
+The +_tag+ versions of the methods allows you specify any name you want for the
+checkboxes. The +_tag+-less versions accepts a object and a method as parameters
+for easy use with ActiveRecord.
 
 All three posibilites supports the following options in the options hash:
 
@@ -54,6 +76,10 @@ All three posibilites supports the following options in the options hash:
 [+initial_alternate+] Determines if the first element of the list should be the
                       alternative one or not. The default is that the first
                       element is not the alternative one.
+[+disabled+] If disabled is +true+ all the checkboxes will be disabled. If
+             disabled is an array only the checkboxes in the array will be
+             disabled. If disabled is +false+ no checkboxes will be disabled.
+             The default is +false+.
 
 Besides the options above described the two tree methods supports also the
 following options:
@@ -83,18 +109,17 @@ you could use something like:
  # In the view
  <%=
    collection_multiple_select(
-     'fruits', Fruit.find(:all), :id, :name, :selected_items => @fruits
+     'person', 'fruit_ids', Fruit.find(:all), :id, :name, :selected_items => @person.fruit_ids
    )
  %>
  
  # In the controller
- @fruits = (params[:fruits] or []).collect {|item| item.to_i}
- @person.fruits.clear
- @person.fruits << Node.find(@fruits)
+ @person.fruit_ids = params[:person][:fruit_ids]
 
 And you will have all the fruits you have selected linked to the person you are
 editing.
 
 == Author
 
-Daniel Rodríguez Troitiño <drodrigueztroitino@yahoo.es>.
+Daniel Rodríguez Troitiño (drodrigueztroitino@yahoo.es).
+Michael Schuerig (michael@schuering.de).

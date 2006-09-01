@@ -221,6 +221,8 @@ module FightTheMelons #:nodoc:
         checkboxes_for_multiple_select.join("\n")
       end
       
+    private
+      
       # Accepts an item and returns a checkbox tag. If the item respond to first
       # and last (such a two element array), the "last" serve as checkbox value
       # and the "first" as label text. If the item is included in the
@@ -240,22 +242,26 @@ module FightTheMelons #:nodoc:
       # <tt>is_alternate</tt> is <tt>true</tt>.
       #
       # The <tt>:disabled</tt> option specifies if the checkbox will be rendered
-      # disabled or not. By default the checkbox will not be disabled.
+      # disabled or not. Disabled can be <tt>true</tt>, <tt>false</tt> or an
+      # array of values that will be disabled. By default the checkbox will not
+      # be disabled.
       def checkbox_for_multiple_select(name, item, selected_items = [], is_alternate = false, options = {})
         position = (options[:position] or :right)
         inner_class = options[:inner_class]
         alternate_class = (options[:alternate_class] or 'alt')
-        disabled = (options[:disabled] or false)
+        is_disabled = (options[:disabled] or false)
         
         if !item.is_a?(String) and item.respond_to?(:first) and item.respond_to?(:last)
           is_selected = selected_items.include?(item.last)
+          is_disabled = is_disabled.include?(item.last) if is_disabled.respond_to?(:include?)
           item_id = idfy("#{name}#{item.last}")
-          cbt = check_box_tag("#{name}[]", html_escape(item.last.to_s), is_selected, :id => item_id, :disabled => disabled)
+          cbt = check_box_tag("#{name}[]", html_escape(item.last.to_s), is_selected, :id => item_id, :disabled => is_disabled)
           lbt = content_tag('label', html_escape(item.first.to_s), :for => item_id)
         else
           is_selected = selected_items.include?(item)
+          is_disabled = is_disabled.include?(item) if is_disabled.respond_to?(:include?)
           item_id = idfy("#{name}#{item.to_s}")
-          cbt = check_box_tag("#{name}[]", html_escape(item.to_s), is_selected, :id => item_id, :disabled => disabled)
+          cbt = check_box_tag("#{name}[]", html_escape(item.to_s), is_selected, :id => item_id, :disabled => is_disabled)
           lbt = content_tag('label', html_escape(item.to_s), :for => item_id)
         end
         
@@ -264,7 +270,6 @@ module FightTheMelons #:nodoc:
         content_tag('div', position == :left ? lbt + cbt : cbt + lbt, :class => item_class)
       end
       
-    private
       # Convert the string <tt>name</tt> provided into a HTML 4.01 valid
       # identifier. If <tt>name</tt> does not start with a letter it will be
       # prepend an 'x' character. All characters outside the posible characters
