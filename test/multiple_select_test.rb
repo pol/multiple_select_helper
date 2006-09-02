@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/test_helper'
 class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
   include FightTheMelons::Helpers::FormMultipleSelectHelper
   
-  fixtures :nodes
+  fixtures :nodes, :fathers, :sons
   
   def test_cfms_empty
     assert_equal "", checkboxes_for_multiple_select('name', [])
@@ -236,159 +236,139 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       checkboxes_from_collection_for_multiple_select('name', Node.find_all_by_parent_id(1), :id, :name, [2, 4])
   end
   
-  def test_mst
-    assert_dom_equal "<div><div>" +
-      "<input id=\"nametest\" name=\"name[]\" type=\"checkbox\" value=\"test\" />" +
-      "<label for=\"nametest\">test</label></div>" +
-      "<input name='name' type='hidden' value='' /></div>",
-      multiple_select_tag('name', ['test'])
-  end
-  
-  def test_mst_with_selected
-    assert_dom_equal "<div><div>" +
-      "<input checked=\"checked\" id=\"nametest1\" name=\"name[]\" type=\"checkbox\" value=\"test1\" />" +
-      "<label for=\"nametest1\">test1</label></div>\n" +
-      "<div>" +
-      "<input id=\"nametest2\" name=\"name[]\" type=\"checkbox\" value=\"test2\" />" +
-      "<label for=\"nametest2\">test2</label></div>" +
-      "<input name='name' type='hidden' value='' /></div>",
-      multiple_select_tag('name', ['test1', 'test2'], :selected_items => ['test1'])
-  end
-  
-  def test_mst_outer_class
-    assert_dom_equal "<div class=\"testclass\"><div>" +
-      "<input id=\"nametest\" name=\"name[]\" type=\"checkbox\" value=\"test\" />" +
-      "<label for=\"nametest\">test</label></div>" +
-      "<input name='name' type='hidden' value='' /></div>",
-      multiple_select_tag('name', ['test'], :outer_class => 'testclass')
-  end
-  
-  def test_mst_empty_tree
-    assert_dom_equal "<div>" +
-      "<input name='name' type='hidden' value='' /></div>",
-      multiple_select_tag('name', [])
-  end
-
-  
-  def test_cmst
-    assert_dom_equal "<div><div>" +
-      "<input id=\"name2\" name=\"name[]\" type=\"checkbox\" value=\"2\" />" +
-      "<label for=\"name2\">Node 1</label></div>\n" +
-      "<div><input id=\"name3\" name=\"name[]\" type=\"checkbox\" value=\"3\" />" +
-      "<label for=\"name3\">Node 2</label></div>\n" +
-      "<div><input id=\"name4\" name=\"name[]\" type=\"checkbox\" value=\"4\" />" +
-      "<label for=\"name4\">Node 3</label></div>" +
-      "<input name='name' type='hidden' value='' /></div>",
-      collection_multiple_select_tag('name', Node.find_all_by_parent_id(1), :id, :name)
-  end
-  
-  def test_cmst_with_selected
-    assert_dom_equal "<div><div>" +
-      "<input checked=\"checked\" id=\"name2\" name=\"name[]\" type=\"checkbox\" value=\"2\" />" +
-      "<label for=\"name2\">Node 1</label></div>\n" +
-      "<div><input id=\"name3\" name=\"name[]\" type=\"checkbox\" value=\"3\" />" +
-      "<label for=\"name3\">Node 2</label></div>\n" +
-      "<div><input checked=\"checked\" id=\"name4\" name=\"name[]\" type=\"checkbox\" value=\"4\" />" +
-      "<label for=\"name4\">Node 3</label></div>" +
-      "<input name='name' type='hidden' value='' /></div>",
-      collection_multiple_select_tag('name', Node.find_all_by_parent_id(1), :id, :name, :selected_items => [2, 4])
-  end
-  
-  def test_cmst_outer_class
-    assert_dom_equal "<div class=\"testclass\"><div>" +
-      "<input id=\"name2\" name=\"name[]\" type=\"checkbox\" value=\"2\" />" +
-      "<label for=\"name2\">Node 1</label></div>\n" +
-      "<div><input id=\"name3\" name=\"name[]\" type=\"checkbox\" value=\"3\" />" +
-      "<label for=\"name3\">Node 2</label></div>\n" +
-      "<div><input id=\"name4\" name=\"name[]\" type=\"checkbox\" value=\"4\" />" +
-      "<label for=\"name4\">Node 3</label></div>" +
-      "<input name='name' type='hidden' value='' /></div>",
-      collection_multiple_select_tag('name', Node.find_all_by_parent_id(1), :id, :name, :outer_class => 'testclass')
-  end
-  
-  def test_cmst_empty_tree
-    assert_dom_equal "<div>" +
-      "<input name='name' type='hidden' value='' /></div>",
-      collection_multiple_select_tag('name', nodes(:n33).children, :id, :name)
-  end
-
-  
-  def test_tmst
-    assert_dom_equal "<div><div>" +
-      "<input id=\"name11\" name=\"name[]\" " +
-      "type=\"checkbox\" value=\"11\" />" +
-      "<label for=\"name11\">Node 3.2.1</label></div>\n" +
-      "<div><input id=\"name12\" name=\"name[]\" " +
-      "type=\"checkbox\" value=\"12\" />" +
-      "<label for=\"name12\">Node 3.2.2</label></div>" +
-      "<input name='name' type='hidden' value='' /></div>",
-      tree_multiple_select_tag('name', nodes(:n32).children, :id, :name)
-  end
-  
-  def test_tmst_with_selected
-    assert_dom_equal "<div><div>" +
-      "<input checked=\"checked\" id=\"name11\" name=\"name[]\" " +
-      "type=\"checkbox\" value=\"11\" />" +
-      "<label for=\"name11\">Node 3.2.1</label></div>\n" +
-      "<div><input id=\"name12\" name=\"name[]\" " +
-      "type=\"checkbox\" value=\"12\" />" +
-      "<label for=\"name12\">Node 3.2.2</label></div>" +
-      "<input name='name' type='hidden' value='' /></div>",
-      tree_multiple_select_tag('name', nodes(:n32).children, :id, :name, :selected_items => [11])
-  end
-  
-  def test_tmst_outer_class
-    assert_dom_equal "<div class=\"testclass\"><div>" +
-      "<input id=\"name11\" name=\"name[]\" " +
-      "type=\"checkbox\" value=\"11\" />" +
-      "<label for=\"name11\">Node 3.2.1</label></div>\n" +
-      "<div><input id=\"name12\" name=\"name[]\" " +
-      "type=\"checkbox\" value=\"12\" />" +
-      "<label for=\"name12\">Node 3.2.2</label></div>" +
-      "<input name='name' type='hidden' value='' /></div>",
-      tree_multiple_select_tag('name', nodes(:n32).children, :id, :name, :outer_class => 'testclass')
-  end
-  
-  def test_tmst_empty_tree
-    assert_dom_equal "<div>" +
-      "<input name='name' type='hidden' value='' /></div>",
-      tree_multiple_select_tag('name', nodes(:n33).children, :id, :name)
-  end
-
-  
   def test_ms
+    @f = Father.new
     assert_dom_equal "<div><div>" +
-      "<input id=\"object_method_test\" name=\"object[method][]\" type=\"checkbox\" value=\"test\" />" +
-      "<label for=\"object_method_test\">test</label></div>" +
-      "<input name='object[method]' type='hidden' value='' /></div>",
-      multiple_select('object', 'method', ['test'])
+      "<input id=\"f_method_for_test_test\" name=\"f[method_for_test][]\" " +
+      "type=\"checkbox\" value=\"test\" />" +
+      "<label for=\"f_method_for_test_test\">test</label></div></div>",
+      multiple_select('f', 'method_for_test', ['test'])
+    assert_dom_equal "<div class=\"test_class\"><div>" +
+      "<input id=\"f_method_for_test_test\" name=\"f[method_for_test][]\" " +
+      "type=\"checkbox\" value=\"test\" />" +
+      "<label for=\"f_method_for_test_test\">test</label></div></div>",
+      multiple_select('f', 'method_for_test', ['test'], :outer_class => 'test_class')
+    assert_dom_equal "<div><div>" +
+      "<input checked=\"checked\" id=\"f_method_for_test_selected_test\" name=\"f[method_for_test_selected][]\" " +
+      "type=\"checkbox\" value=\"test\" />" +
+      "<label for=\"f_method_for_test_selected_test\">test</label></div></div>",
+      multiple_select('f', 'method_for_test_selected', ['test'])
+    assert_dom_equal "<div></div>",
+      multiple_select('f', 'method_for_test', [])
   end
   
   def test_cms
+    Father.class_eval 'has_many :sons'
+    Son.class_eval 'belongs_to :father'
+    
+    @f = Father.new
+    @f.son_ids = []
+    
     assert_dom_equal "<div><div>" +
-      "<input id=\"object_method_2\" name=\"object[method][]\" " +
+      "<input id=\"f_son_ids_1\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"1\" />" +
+      "<label for=\"f_son_ids_1\">Son 1</label></div>\n" +
+      "<div><input id=\"f_son_ids_2\" name=\"f[son_ids][]\" " +
       "type=\"checkbox\" value=\"2\" />" +
-      "<label for=\"object_method_2\">Node 1</label></div>\n" +
-      "<div><input id=\"object_method_3\" name=\"object[method][]\" " +
+      "<label for=\"f_son_ids_2\">Son 2</label></div>\n" +
+      "<div><input id=\"f_son_ids_3\" name=\"f[son_ids][]\" " +
       "type=\"checkbox\" value=\"3\" />" +
-      "<label for=\"object_method_3\">Node 2</label></div>\n" +
-      "<div><input id=\"object_method_4\" name=\"object[method][]\" " +
+      "<label for=\"f_son_ids_3\">Son 3</label></div>\n" +
+      "<div><input id=\"f_son_ids_4\" name=\"f[son_ids][]\" " +
       "type=\"checkbox\" value=\"4\" />" +
-      "<label for=\"object_method_4\">Node 3</label></div>" +
-      "<input name='object[method]' type='hidden' value='' /></div>",
-      collection_multiple_select('object', 'method', Node.find_all_by_parent_id(1), :id, :name)
+      "<label for=\"f_son_ids_4\">Son 4</label></div>\n" +
+      "<div><input id=\"f_son_ids_5\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"5\" />" +
+      "<label for=\"f_son_ids_5\">Son 5</label></div>\n" +
+      "<div><input id=\"f_son_ids_6\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"6\" />" +
+      "<label for=\"f_son_ids_6\">Son 6</label></div>\n" +
+      "<div><input id=\"f_son_ids_7\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"7\" />" +
+      "<label for=\"f_son_ids_7\">Son 7</label></div></div>",
+      collection_multiple_select('f', 'son_ids', Son.find(:all), :id, :name)
+    
+    assert_dom_equal "<div class=\"test_class\"><div>" +
+      "<input id=\"f_son_ids_1\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"1\" />" +
+      "<label for=\"f_son_ids_1\">Son 1</label></div>\n" +
+      "<div><input id=\"f_son_ids_2\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"2\" />" +
+      "<label for=\"f_son_ids_2\">Son 2</label></div>\n" +
+      "<div><input id=\"f_son_ids_3\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"3\" />" +
+      "<label for=\"f_son_ids_3\">Son 3</label></div>\n" +
+      "<div><input id=\"f_son_ids_4\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"4\" />" +
+      "<label for=\"f_son_ids_4\">Son 4</label></div>\n" +
+      "<div><input id=\"f_son_ids_5\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"5\" />" +
+      "<label for=\"f_son_ids_5\">Son 5</label></div>\n" +
+      "<div><input id=\"f_son_ids_6\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"6\" />" +
+      "<label for=\"f_son_ids_6\">Son 6</label></div>\n" +
+      "<div><input id=\"f_son_ids_7\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"7\" />" +
+      "<label for=\"f_son_ids_7\">Son 7</label></div></div>",
+      collection_multiple_select('f', 'son_ids', Son.find(:all), :id, :name, :outer_class => 'test_class')
+    
+    @f.son_ids = [4, 5, 6]
+    assert_dom_equal "<div><div>" +
+      "<input id=\"f_son_ids_1\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"1\" />" +
+      "<label for=\"f_son_ids_1\">Son 1</label></div>\n" +
+      "<div><input id=\"f_son_ids_2\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"2\" />" +
+      "<label for=\"f_son_ids_2\">Son 2</label></div>\n" +
+      "<div><input id=\"f_son_ids_3\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"3\" />" +
+      "<label for=\"f_son_ids_3\">Son 3</label></div>\n" +
+      "<div><input checked=\"checked\" id=\"f_son_ids_4\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"4\" />" +
+      "<label for=\"f_son_ids_4\">Son 4</label></div>\n" +
+      "<div><input checked=\"checked\" id=\"f_son_ids_5\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"5\" />" +
+      "<label for=\"f_son_ids_5\">Son 5</label></div>\n" +
+      "<div><input checked=\"checked\" id=\"f_son_ids_6\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"6\" />" +
+      "<label for=\"f_son_ids_6\">Son 6</label></div>\n" +
+      "<div><input id=\"f_son_ids_7\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"7\" />" +
+      "<label for=\"f_son_ids_7\">Son 7</label></div></div>",
+      collection_multiple_select('f', 'son_ids', Son.find(:all), :id, :name)
+     
+     assert_dom_equal "<div></div>",
+       collection_multiple_select('f', 'son_ids', [], :id, :name)
   end
   
   def test_tms
-  	assert_dom_equal "<div><div>" +
-      "<input id=\"object_method_11\" name=\"object[method][]\" " +
+    @n = Node.new
+    assert_dom_equal "<div><div>" +
+      "<input id=\"n_selected_none_11\" name=\"n[selected_none][]\" " +
       "type=\"checkbox\" value=\"11\" />" +
-      "<label for=\"object_method_11\">Node 3.2.1</label></div>\n" +
-      "<div><input id=\"object_method_12\" name=\"object[method][]\" " +
+      "<label for=\"n_selected_none_11\">Node 3.2.1</label></div>\n" +
+      "<div><input id=\"n_selected_none_12\" name=\"n[selected_none][]\" " +
       "type=\"checkbox\" value=\"12\" />" +
-      "<label for=\"object_method_12\">Node 3.2.2</label></div>" +
-      "<input name='object[method]' type='hidden' value='' /></div>",
-      tree_multiple_select('object', 'method', nodes(:n32).children, :id, :name)
+      "<label for=\"n_selected_none_12\">Node 3.2.2</label></div>",
+      tree_multiple_select('n', 'selected_none', nodes(:n32).children, :id, :name)
+    assert_dom_equal "<div class=\"test_class\"><div>" +
+      "<input id=\"n_selected_none_11\" name=\"n[selected_none][]\" " +
+      "type=\"checkbox\" value=\"11\" />" +
+      "<label for=\"n_selected_none_11\">Node 3.2.1</label></div>\n" +
+      "<div><input id=\"n_selected_none_12\" name=\"n[selected_none][]\" " +
+      "type=\"checkbox\" value=\"12\" />" +
+      "<label for=\"n_selected_none_12\">Node 3.2.2</label></div>",
+      tree_multiple_select('n', 'selected_none', nodes(:n32).children, :id, :name, :outer_class => 'test_class')
+    assert_dom_equal "<div><div>" +
+      "<input id=\"n_selected_some_11\" name=\"n[selected_some][]\" " +
+      "type=\"checkbox\" value=\"11\" />" +
+      "<label for=\"n_selected_some_11\">Node 3.2.1</label></div>\n" +
+      "<div><input checked=\"checked\" id=\"n_selected_some_12\" name=\"n[selected_some][]\" " +
+      "type=\"checkbox\" value=\"12\" />" +
+      "<label for=\"n_selected_some_12\">Node 3.2.2</label></div></div>",
+      tree_multiple_select('n', 'selected_some', nodes(:n32).children, :id, :name)
+    assert_dom_equal "<div></div>",
+      tree_multiple_select('n', 'selected_some', nodes(:n33).children, :id, :name)
   end
     
   def test_cftfms

@@ -9,6 +9,7 @@ module FightTheMelons #:nodoc:
       include ERB::Util
       include ActionView::Helpers::FormTagHelper
       include ActionView::Helpers::TagHelper
+      include ActionView::Helpers
       
       # Returns a list of checkboxes using
       # checkboxes_from_collection_for_multiple_select to generate the list of
@@ -20,27 +21,7 @@ module FightTheMelons #:nodoc:
       # The option <tt>:outer_class</tt> specifies the HTML class of the div
       # element that wraps the checkbox list.
       def collection_multiple_select(object, method, collection, value_method, text_method, options = {})
-        collection_multiple_select_tag("#{object}[#{method}]", collection, value_method, text_method, options)
-      end
-      
-      # Returns a list of checkboxes using
-      # checkboxes_from_collection_for_multiple_select to generate the list of
-      # checkboxes.
-      #
-      # If a <tt>:selected_items</tt> option is provided it will be used as
-      # selection.
-      #
-      # The option <tt>:outer_class</tt> specifies the HTML class of the div
-      # element that wraps the checkbox list.
-      def collection_multiple_select_tag(name, collection, value_method, text_method, options = {})
-        selected_items = (options[:selected_items] || [])
-        outer_class = options[:outer_class]
-        
-        checkboxes = checkboxes_from_collection_for_multiple_select(
-          name, collection, value_method, text_method, selected_items, options
-        )  + hidden_field_tag(name, '', :id => nil)
-        
-        content_tag('div', checkboxes, :class => outer_class)
+        InstanceTag.new(object, method, self, nil, options.delete(:object)).to_collection_multiple_select_tag("#{object}[#{method}]", collection, value_method, text_method, options)
       end
       
       # Create a list of checkboxes. See checkboxes_for_multiple_select for the
@@ -52,26 +33,7 @@ module FightTheMelons #:nodoc:
       # The option <tt>:outer_class</tt> specifies the HTML class of the div
       # element that wraps the checkbox list.
       def multiple_select(object, method, container, options = {})
-        multiple_select_tag("#{object}[#{method}]", container, options)
-      end
-      
-      # Create a list of checkboxes. See checkboxes_for_multiple_select for the
-      # required format of the choices parameter.
-      #
-      # If a <tt>:selected_items</tt> option is provided it will be used as
-      # selection.
-      #
-      # The option <tt>:outer_class</tt> specifies the HTML class of the div
-      # element that wraps the checkbox list.
-      def multiple_select_tag(name, container, options = {})
-        selected_items = (options[:selected_items] || [])
-        outer_class = options[:outer_class]
-        
-        checkboxes = checkboxes_for_multiple_select(
-          name, container, selected_items, options
-        ) + hidden_field_tag(name, '', :id => nil)
-        
-        content_tag('div', checkboxes, :class => outer_class)
+        InstanceTag.new(object, method, self, nil, options.delete(:object)).to_multiple_select_tag("#{object}[#{method}]", container, options)
       end
       
       # Create a list of hierarchical checkboxes for the provides object and
@@ -85,28 +47,7 @@ module FightTheMelons #:nodoc:
       # The option <tt>:outer_class</tt> specifies the HTML class of the div
       # element that wraps the checkbox hierarchy.
       def tree_multiple_select(object, method, nodes, value_method, text_method, options = {})
-        tree_multiple_select_tag("#{object}[#{method}]", nodes, value_method, text_method, options)
-      end
-      
-      # Create a list of hierarchical checkboxes for the provides object and
-      # method.
-      # The hierarchy must respond to <tt>:child_method</tt> to get the direct
-      # children of the actual node. The default value is <tt>children</tt>.
-      #
-      # If a <tt>:selected_items</tt> option is provided it will be used as
-      # selection.
-      #
-      # The option <tt>:outer_class</tt> specifies the HTML class of the div
-      # element that wraps the checkbox hierarchy.
-      def tree_multiple_select_tag(name, nodes, value_method, text_method, options = {})
-        selected_items = (options[:selected_items] || [])
-        outer_class = options[:outer_class]
-        
-        checkboxes = checkboxes_from_tree_for_multiple_select(
-          name, nodes, value_method, text_method, selected_items, options
-        ) + hidden_field_tag(name, '', :id => nil)
-        
-        content_tag('div', checkboxes, :class => outer_class)
+        InstanceTag.new(object, method, self, nil, options.delete(:object)).to_tree_multiple_select_tag("#{object}[#{method}]", nodes, value_method, text_method, options)
       end
       
       # Returns a string of checkboxes that have been compiled iterating over
@@ -280,6 +221,30 @@ module FightTheMelons #:nodoc:
       def idfy(name)
         name = 'x' + name unless /^[a-zA-Z]/ =~ name
         name.scan(/[-a-zA-Z0-9_:.]+/).join('_')
+      end
+    end
+  end
+end
+
+module ActionView #:nodoc:
+  module Helpers #:nodoc:
+    class InstanceTag #:nodoc:
+      include FightTheMelons::Helpers::FormMultipleSelectHelper
+      
+      def to_multiple_select_tag(name, container, options)
+        selected_items = options.has_key?(:selected_items) ? options[:selected_items] : value
+        outer_class = options[:outer_class]
+        content_tag('div', checkboxes_for_multiple_select(name, container, selected_items, options), :class => outer_class)
+      end
+      
+      def to_collection_multiple_select_tag(name, collection, value_method, text_method, options)
+        outer_class = options[:outer_class]
+        content_tag('div', checkboxes_from_collection_for_multiple_select(name, collection, value_method, text_method, value, options), :class => outer_class)
+      end
+      
+      def to_tree_multiple_select_tag(name, nodes, value_method, text_method, options)
+        outer_class = options[:outer_class]
+        content_tag('div', checkboxes_from_tree_for_multiple_select(name, nodes, value_method, text_method, value, options), :class => outer_class)
       end
     end
   end
