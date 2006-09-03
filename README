@@ -19,7 +19,7 @@ http://svn.ruido-blanco.net/multiple_select/trunk
 
 You can find this information at:
 
-http://ruido-blanco.net/blog/rails-multiple-select-helper-plugin/
+http://ruido-blanco.net/blog/rails-multiple-select-helper-plugin
 
 == Using Multiple Select Helper
 
@@ -54,6 +54,10 @@ All three posibilites supports the following options in the options hash:
 [+initial_alternate+] Determines if the first element of the list should be the
                       alternative one or not. The default is that the first
                       element is not the alternative one.
+[+disabled+] If disabled is +true+ all the checkboxes will be disabled. If
+             disabled is an array only the checkboxes in the array will be
+             disabled. If disabled is +false+ no checkboxes will be disabled.
+             The default is +false+.
 
 Besides the options above described the two tree methods supports also the
 following options:
@@ -89,12 +93,22 @@ you could use something like:
  
  # In the controller
  @fruits = (params[:fruits] or []).collect {|item| item.to_i}
- @person.fruits.clear
- @person.fruits << Node.find(@fruits)
+ @person.fruit_ids = @fruits
 
 And you will have all the fruits you have selected linked to the person you are
 editing.
 
-== Author
+== Version history
 
-Daniel Rodríguez Troitiño <drodrigueztroitino@yahoo.es>.
+- 20060903
+  - Added disabled option.
+  - The ids generated are now HTML 4.01 valid.
+  - The tree version is more efficient now.
+- 20060806
+  - Initial release.
+
+== Authors
+
+- Daniel Rodríguez Troitiño (mailto:drodrigueztroitino@yahoo.es).
+- Michael Schuerig (mailto:michael@schuering.de): disabled option.
+
