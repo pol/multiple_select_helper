@@ -19,7 +19,7 @@ http://svn.ruido-blanco.net/multiple_select/branches/object-method-parameters
 
 You can find this information at:
 
-http://ruido-blanco.net/blog/rails-multiple-select-helper-plugin/
+http://ruido-blanco.net/blog/rails-multiple-select-helper-plugin
 
 == A note of warning
 
@@ -42,20 +42,14 @@ a plugin and you install both mine and his/her, things may go wrong.
 There are 3 tuples of functions that you can use depending of the source of your
 data:
 
-- +multiple_select+ (and +multiple_select_tag+ and
-  +checkboxes_for_multiple_select+): With arrays, hashes
+- +multiple_select+ (and +checkboxes_for_multiple_select+): With arrays, hashes
   or your own classes (implementing first and last in them).
-- +collection_multiple_select+ (and +collection_multiple_select_tag+ and
+- +collection_multiple_select+ (and
   +checkboxes_from_collection_for_multiple_select+): With arrays of classes
   using +text_method+ and +value_method+ to access the data in the instances.
-- +tree_multiple_select+ (and +tree_multiple_select_tag+ and
-  +checkboxes_from_tree_for_multiple_select+): With
+- +tree_multiple_select+ (and +checkboxes_from_tree_for_multiple_select+): With
   tree-like structures (like ActiveRecord's +acts_as_tree+) using +text_method+
   and +value_method+ to access the data in the instances.
-
-The +_tag+ versions of the methods allows you specify any name you want for the
-checkboxes. The +_tag+-less versions accepts a object and a method as parameters
-for easy use with ActiveRecord.
 
 All three posibilites supports the following options in the options hash:
 
