@@ -49,9 +49,10 @@ module FightTheMelons #:nodoc:
         content_tag('div', checkboxes, :class => outer_class)
       end
       
-      # Create a list of hierarchical checkboxes.
-      # The hierarchy must respond to <tt>:child_method</tt> to get the direct
-      # children of the actual node. The default value is <tt>children</tt>.
+      # Create a list of hierarchical checkboxes using
+      # checkboxes_from_tree_for_multiple_select. The hierarchy must respond to
+      # <tt>:child_method</tt> option to get the direct children of the actual
+      # node. The default value is <tt>children</tt>.
       #
       # If a <tt>:selected_items</tt> option is provided it will be used as
       # selection.
@@ -74,7 +75,8 @@ module FightTheMelons #:nodoc:
       # <tt>value_method</tt> as the option value and the <tt>text_method</tt>
       # as the label text. If <tt>selected_items</tt> is specified, the element
       # returning a match on <tt>value_method</tt> will get the selected
-      # attribute in its checkbox.
+      # attribute in its checkbox. See checkboxes_for_multiple_select for the
+      # allowed options in the hash.
       def checkboxes_from_collection_for_multiple_select(name, collection, value_method, text_method, selected_items = [], options = {})
         coll = (collection or [])
         
@@ -98,11 +100,13 @@ module FightTheMelons #:nodoc:
       # The option <tt>:level_class</tt> is a CSS class prefix that will be
       # applied to the checkbox div element suffixing it with the actual depth.
       #
-      # The option <tt>initial_level</tt> is the value that will be used as suffix
+      # The option <tt>:initial_level</tt> is the value that will be used as suffix
       # for <tt>level_class</tt> option. It defaults to 0.
       #
-      # The option <tt>child_method</tt> allows access to an array of direct
+      # The option <tt>:child_method</tt> allows access to an array of direct
       # children of the actual method. It defaults to "children".
+      # 
+      # See checkboxes_for_multiple_select for more allowed options.
       def checkboxes_from_tree_for_multiple_select(name, nodes, value_method, text_method, selected_items = [], options = {})
         depth = (options[:depth] or -1)
         level_class = options[:level_class]
@@ -157,7 +161,7 @@ module FightTheMelons #:nodoc:
       # first and last (such a two-element array), the "last" serve as checkbox
       # values and the "first" as label text. Hashes are turned into this form
       # automatically, so the keys beceome "first" and the values become
-      # "lasts". If <tt>selected_items</item> is not empty, the matching
+      # "lasts". If <tt>selected_items</tt> is not empty, the matching
       # elements will get the selected attribute in its checkbox. If the option
       # <tt>:label_position</tt> is provided the specified position is used
       # (<tt>:left</tt> or <tt>:right</tt>), otherwise the default
@@ -173,6 +177,18 @@ module FightTheMelons #:nodoc:
       # The <tt>:initial_alternate</tt> option specifies if the first element
       # should have the alternate style or not. By default the first element
       # does not have the alternate style.
+      #
+      # If the option <tt>:position</tt> is provided the specified
+      # position is used (<tt>:left</tt> or <tt>:right</tt>), otherwise the
+      # default <tt>:right</tt> position is used.
+      #
+      # The <tt>:inner_class</tt> option specifies the base class of the div that
+      # surrounds the checkbox and the label.
+      #
+      # The <tt>:disabled</tt> option specifies if the checkbox will be rendered
+      # disabled or not. Disabled can be <tt>true</tt>, <tt>false</tt> or an
+      # array of values that will be disabled. By default the checkbox will not
+      # be disabled.
       def checkboxes_for_multiple_select(name, container, selected_items = [], options = {})
         container = container.to_a if Hash === container
         alternate = (options[:alternate] or false)
@@ -195,22 +211,6 @@ module FightTheMelons #:nodoc:
       # <tt>selected_items</tt> its checkbox will be selected. The
       # <tt>is_alternate</tt> determines if the checkbox will use the alternate
       # class name or not.
-      #
-      # If the option <tt>:position</tt> is provided the specified
-      # position is used (<tt>:left</tt> or <tt>:right</tt>), otherwise the
-      # default <tt>:right</tt> position is used.
-      #
-      # The <tt>:inner_class</tt> option specifies the base class of the div that
-      # surrounds the checkbox and the label.
-      #
-      # The <tt>:alternate_class</tt> option allow to specify
-      # a additional class that will be used in the element if
-      # <tt>is_alternate</tt> is <tt>true</tt>.
-      #
-      # The <tt>:disabled</tt> option specifies if the checkbox will be rendered
-      # disabled or not. Disabled can be <tt>true</tt>, <tt>false</tt> or an
-      # array of values that will be disabled. By default the checkbox will not
-      # be disabled.
       def checkbox_for_multiple_select(name, item, selected_items = [], is_alternate = false, options = {})
         position = (options[:position] or :right)
         inner_class = options[:inner_class]
