@@ -37,11 +37,11 @@ data:
 
 All three posibilites supports the following options in the options hash:
 
-[+outer_class+] Specifies the class of the div that wraps all the checkboxes.
+[+outer_class+] Specifies the class of the ul that wraps all the checkboxes.
 [+selected_items+] Specifies an array of items that should be selected when the
                    list renders (only in the three main methods, the other three
                    use the +selected_items+ parameter instead).
-[+inner_class+] Specifies the class of the div that wraps each checkbox.
+[+inner_class+] Specifies the class of the li that wraps each checkbox.
 [+position+] Determines the position of the label besides the checkbox. The value
              should be <tt>:right</tt> or <tt>:left</tt>. The default is
              <tt>:right</tt>.
@@ -58,6 +58,12 @@ All three posibilites supports the following options in the options hash:
              disabled is an array only the checkboxes in the array will be
              disabled. If disabled is +false+ no checkboxes will be disabled.
              The default is +false+.
+[+hidden_field+] Adds a hidden field input tag as the last element of the list
+                 with a zero length string as value and the same name of the
+                 checkboxes so you always have the parameter returned in your
+                 controller. Keep in mind that this options make that you always
+                 have a <tt>""</tt> element in your parameter array. The default
+                 value for this options is +false+.
 
 Besides the options above described the two tree methods supports also the
 following options:
@@ -69,12 +75,36 @@ following options:
                  the node. The default is "children" (valid for +acts_as_tree+.
                  For +acts_as_nested_set+ use "direct_children" instead).
 [+level_class+] Specifies the preffix of the class that will be used in each of
-                the divs that wrap each checkbox. The +level_class+ will be
+                the li that wrap each checkbox. The +level_class+ will be
                 suffixed with a incresing number according the level of the
                 actual checkbox. This class will be added to the +inner_class+
                 and the alternative class if they are also specified.
 [+initial_level+] Specifies the first level that will be used as preffix of
                   +level_class+. The default is 0.
+
+Since 20060917 version you could establish default option for some of the most
+used parameters (+outer_class+, +inner_class+, +level_class+, +alternate+,
++alternate_class+, +position+ and +hidden_field+). To set the new default values
+of this variables you can write in your <tt>environment.rb</tt>:
+
+ FightTheMelons::Helpers::FormMultipleSelectHelper.outer_class = 'myclass'
+
+And every call to every method of the module will use an default +outer_class+
+of +myclass+ (you can always pass a new value in the options hash and it will be
+used instead of the default value).
+
+There is an additional variable that you can not set using the options hash of
+the methods but you can set using a module variable. This variable is call is
++list_tags+ and is an array of two strings that will be used to wrap the
+list and the individual list items, respectively. So if you want your checkboxes
+wrapped by divs like in pre-20060917 versions you can set the variable like
+this:
+
+ FightTheMelons::Helpers::FormMultipleSelectHelper.list_tags = ['div', 'div']
+
+Note that this line does NOT produce the exact same results as pre-20060917
+versions of the plugin in the tree methods (collection and normal methods
+produce the same results, as far as I know).
 
 When you want to store your list of checked options in a "habtm" relationship
 you could use something like:
@@ -100,6 +130,10 @@ editing.
 
 == Version history
 
+- 20060917
+  - Added hidden_field option.
+  - Change the default tags to <ul> and <li>.
+  - Added module-wide variables for most used options.
 - 20060903
   - Added disabled option.
   - The ids generated are now HTML 4.01 valid.
@@ -110,5 +144,6 @@ editing.
 == Authors
 
 - Daniel Rodríguez Troitiño (mailto:drodrigueztroitino@yahoo.es).
-- Michael Schuerig (mailto:michael@schuering.de): disabled option.
+- Michael Schuerig (mailto:michael@schuering.de): disabled option, hidden_field,
+  and the default <ul> and <li> tags.
 
