@@ -58,12 +58,13 @@ All three posibilites supports the following options in the options hash:
              disabled is an array only the checkboxes in the array will be
              disabled. If disabled is +false+ no checkboxes will be disabled.
              The default is +false+.
-[+hidden_field+] Adds a hidden field input tag as the last element of the list
-                 with a zero length string as value and the same name of the
-                 checkboxes so you always have the parameter returned in your
-                 controller. Keep in mind that this options make that you always
-                 have a <tt>""</tt> element in your parameter array. The default
-                 value for this options is +false+.
+[+include_hidden_field+] Adds a hidden field input tag as the last element of
+                         the list with a zero length string as value and the
+                         same name of the checkboxes so you always have the
+                         parameter returned in your controller. Keep in mind
+                         that this options make that you always have a
+                         <tt>""</tt> element in your parameter array. The
+                         default value for this options is +false+.
 
 Besides the options above described the two tree methods supports also the
 following options:
@@ -84,10 +85,10 @@ following options:
 
 Since 20060917 version you could establish default option for some of the most
 used parameters (+outer_class+, +inner_class+, +level_class+, +alternate+,
-+alternate_class+, +position+ and +hidden_field+). To set the new default values
-of this variables you can write in your <tt>environment.rb</tt>:
++alternate_class+, +position+ and +include_hidden_field+). To set the new
+default values of this variables you can write in your <tt>environment.rb</tt>:
 
- FightTheMelons::Helpers::FormMultipleSelectHelper.outer_class = 'myclass'
+ FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.outer_class = 'myclass'
 
 And every call to every method of the module will use an default +outer_class+
 of +myclass+ (you can always pass a new value in the options hash and it will be
@@ -100,7 +101,7 @@ list and the individual list items, respectively. So if you want your checkboxes
 wrapped by divs like in pre-20060917 versions you can set the variable like
 this:
 
- FightTheMelons::Helpers::FormMultipleSelectHelper.list_tags = ['div', 'div']
+ FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.list_tags = ['div', 'div']
 
 Note that this line does NOT produce the exact same results as pre-20060917
 versions of the plugin in the tree methods (collection and normal methods
@@ -130,6 +131,10 @@ editing.
 
 == Version history
 
+- 20060918
+  - Changed the hidden_field option to include_hidden_field so it do not clash
+    with Rails hidden_field method.
+  - Moved all the configuration to a new module not included in ActionView.
 - 20060917
   - Added hidden_field option.
   - Change the default tags to <ul> and <li>.
