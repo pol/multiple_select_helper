@@ -3,17 +3,10 @@ require 'action_view'
 
 module FightTheMelons #:nodoc:
   module Helpers #:nodoc:
-    # Provides a number of methods for turning different kinds of containers
-    # into checkboxes lists.
-    module FormMultipleSelectHelper
-      include ERB::Util
-      include ActionView::Helpers::FormTagHelper
-      include ActionView::Helpers::TagHelper
-      include ActionView::Helpers
-      
-      # Some of the most used variables so you can setup them per application or
-      # per controller instead of everytime you use one of the helpers.
-      
+    
+  	# Some of the most used variables so you can setup them per application or
+    # per controller instead of everytime you use one of the helpers.
+    module FormMultipleSelectHelperConfiguration      
       # Class used in the ul tag that wraps all the checkboxes.
       attr_accessor :outer_class
       module_function :outer_class, :outer_class=
@@ -39,28 +32,37 @@ module FightTheMelons #:nodoc:
       module_function :position, :position=
       
       # Determines if a hidden field should be added to the checkboxes.
-      attr_accessor :hidden_field
-      module_function :hidden_field, :hidden_field=
+      attr_accessor :include_hidden_field
+      module_function :include_hidden_field, :include_hidden_field=
       
       # Establish the name of the tags used to wrap the elements.
       attr_accessor :list_tags
       module_function :list_tags, :list_tags=
       
       # Default value for alternate is false.
-      FightTheMelons::Helpers::FormMultipleSelectHelper.alternate = false
+      self.alternate = false
       
       # Default value for alternate_class is 'alt'.
-      FightTheMelons::Helpers::FormMultipleSelectHelper.alternate_class = 'alt'
+      self.alternate_class = 'alt'
       
       # Default value for position is ':right'
-      FightTheMelons::Helpers::FormMultipleSelectHelper.position = :right
+      self.position = :right
       
-      # Default value for hidden_field is false.
-      FightTheMelons::Helpers::FormMultipleSelectHelper.hidden_field = false
+      # Default value for include_hidden_field is false.
+      self.include_hidden_field = false
       
       # Default value for list_tags is ['ul', 'li']
-      FightTheMelons::Helpers::FormMultipleSelectHelper.list_tags = ['ul', 'li']
-      
+      self.list_tags = ['ul', 'li']
+    end
+    
+    # Provides a number of methods for turning different kinds of containers
+    # into checkboxes lists.
+    module FormMultipleSelectHelper
+      include ERB::Util
+      include ActionView::Helpers::FormTagHelper
+      include ActionView::Helpers::TagHelper
+      include ActionView::Helpers
+            
       # Returns a list of checkboxes using
       # checkboxes_from_collection_for_multiple_select to generate the list of
       # checkboxes.
@@ -155,13 +157,13 @@ module FightTheMelons #:nodoc:
       )
         depth = (options[:depth] or -1)
         level_class = (options[:level_class] or
-          FightTheMelons::Helpers::FormMultipleSelectHelper.level_class)
+          FormMultipleSelectHelperConfiguration.level_class)
         initial_level = (options[:initial_level] or 0)
         child_method = (options[:child_method] or :children)
         inner_class = (options[:inner_class] or
-          FightTheMelons::Helpers::FormMultipleSelectHelper.inner_class)
+          FormMultipleSelectHelperConfiguration.inner_class)
         alternate = options[:alternate].nil? ?
-          FightTheMelons::Helpers::FormMultipleSelectHelper.alternate :
+          FormMultipleSelectHelperConfiguration.alternate :
           options[:alternate]
         alt = (options[:initial_alternate] or false) if alternate
         
@@ -189,7 +191,7 @@ module FightTheMelons #:nodoc:
             children = node.send(child_method)
             branch = if not (depth == 0 || children.size == 0)
 	            "\n" + content_tag(
-	              FightTheMelons::Helpers::FormMultipleSelectHelper.list_tags[0],
+	              FormMultipleSelectHelperConfiguration.list_tags[0],
 	              checkboxes_from_tree_for_multiple_select(
                     name, children, value_method, text_method, selected_items,
                     child_options
@@ -232,7 +234,7 @@ module FightTheMelons #:nodoc:
       )
         container = container.to_a if Hash === container
         alternate = options[:alternate].nil? ?
-          FightTheMelons::Helpers::FormMultipleSelectHelper.alternate :
+          FormMultipleSelectHelperConfiguration.alternate :
           options[:alternate]
         alt = (options[:initial_alternate] or false)
         
@@ -273,11 +275,11 @@ module FightTheMelons #:nodoc:
       # be disabled.
       def checkbox_for_multiple_select(name, item, selected_items = [], is_alternate = false, options = {})
         position = (options[:position] or
-          FightTheMelons::Helpers::FormMultipleSelectHelper.position)
+          FormMultipleSelectHelperConfiguration.position)
         inner_class = (options[:inner_class] or
-          FightTheMelons::Helpers::FormMultipleSelectHelper.inner_class)
+          FormMultipleSelectHelperConfiguration.inner_class)
         alternate_class = (options[:alternate_class] or
-          FightTheMelons::Helpers::FormMultipleSelectHelper.alternate_class)
+          FormMultipleSelectHelperConfiguration.alternate_class)
         is_disabled = (options[:disabled] or false)
         
         if !item.is_a?(String) and item.respond_to?(:first) and item.respond_to?(:last)
@@ -299,7 +301,7 @@ module FightTheMelons #:nodoc:
         extra = block_given? ? yield : ''
         
         content_tag(
-          FightTheMelons::Helpers::FormMultipleSelectHelper.list_tags[1],
+          FormMultipleSelectHelperConfiguration.list_tags[1],
           position == :left ? lbt + cbt + extra : cbt + lbt + extra,
           :class => item_class
         )
@@ -324,51 +326,52 @@ module ActionView #:nodoc:
   module Helpers #:nodoc:
     class InstanceTag #:nodoc:
       include FightTheMelons::Helpers::FormMultipleSelectHelper
+      include FightTheMelons::Helpers
       
       def to_multiple_select_tag(name, container, options)
         selected_items = options.has_key?(:selected_items) ? options[:selected_items] : value
         outer_class = (options[:outer_class] or
-          FightTheMelons::Helpers::FormMultipleSelectHelper.outer_class)
-        hidden_field = options[:hidden_field].nil? ?
-          FightTheMelons::Helpers::FormMultipleSelectHelper.hidden_field :
-          options[:hidden_field]
+          FormMultipleSelectHelperConfiguration.outer_class)
+        include_hidden_field = options[:include_hidden_field].nil? ?
+          FormMultipleSelectHelperConfiguration.include_hidden_field :
+          options[:include_hidden_field]
         content_tag(
-          FightTheMelons::Helpers::FormMultipleSelectHelper.list_tags[0],
+          FormMultipleSelectHelperConfiguration.list_tags[0],
           checkboxes_for_multiple_select(
             name, container, selected_items, options
-          ) + (hidden_field ? hidden_field_tag("#{name}[]", '', :id => nil) : ''),
+          ),
           :class => outer_class
-        )
+        ) + (include_hidden_field ? "\n" + hidden_field_tag("#{name}[]", '', :id => nil) : '')
       end
       
       def to_collection_multiple_select_tag(name, collection, value_method, text_method, options)
         outer_class = (options[:outer_class] or
-          FightTheMelons::Helpers::FormMultipleSelectHelper.outer_class)
-        hidden_field = options[:hidden_field].nil? ?
-          FightTheMelons::Helpers::FormMultipleSelectHelper.hidden_field :
-          options[:hidden_field]
+          FormMultipleSelectHelperConfiguration.outer_class)
+        include_hidden_field = options[:include_hidden_field].nil? ?
+          FormMultipleSelectHelperConfiguration.include_hidden_field :
+          options[:include_hidden_field]
         content_tag(
-          FightTheMelons::Helpers::FormMultipleSelectHelper.list_tags[0],
+          FormMultipleSelectHelperConfiguration.list_tags[0],
           checkboxes_from_collection_for_multiple_select(
             name, collection, value_method, text_method, value, options
-          ) + (hidden_field ? hidden_field_tag("#{name}[]", '', :id => nil) : ''),
+          ),
           :class => outer_class
-        )
+        ) + (include_hidden_field ? "\n" + hidden_field_tag("#{name}[]", '', :id => nil) : '')
       end
       
       def to_tree_multiple_select_tag(name, nodes, value_method, text_method, options)
         outer_class = (options[:outer_class] or
-          FightTheMelons::Helpers::FormMultipleSelectHelper.outer_class)
-        hidden_field = options[:hidden_field].nil? ?
-          FightTheMelons::Helpers::FormMultipleSelectHelper.hidden_field :
-          options[:hidden_field]
+          FormMultipleSelectHelperConfiguration.outer_class)
+        include_hidden_field = options[:include_hidden_field].nil? ?
+          FormMultipleSelectHelperConfiguration.include_hidden_field :
+          options[:include_hidden_field]
         content_tag(
-          FightTheMelons::Helpers::FormMultipleSelectHelper.list_tags[0],
+          FormMultipleSelectHelperConfiguration.list_tags[0],
           checkboxes_from_tree_for_multiple_select(
             name, nodes, value_method, text_method, value, options
-          ) + (hidden_field ? hidden_field_tag("#{name}[]", '', :id => nil) : ''),
+          ),
           :class => outer_class
-        )
+        ) + (include_hidden_field ? "\n" + hidden_field_tag("#{name}[]", '', :id => nil) : '')
       end
     end
   end

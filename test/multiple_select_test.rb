@@ -8,13 +8,13 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
   # Have to fake the default static variables because they jump from one test to
   # another. Yes, this is bad bad bad coding.
   def setup
-    FightTheMelons::Helpers::FormMultipleSelectHelper.outer_class = nil
-    FightTheMelons::Helpers::FormMultipleSelectHelper.inner_class = nil
-    FightTheMelons::Helpers::FormMultipleSelectHelper.level_class = nil
-    FightTheMelons::Helpers::FormMultipleSelectHelper.alternate_class = 'alt'
-    FightTheMelons::Helpers::FormMultipleSelectHelper.alternate = false
-    FightTheMelons::Helpers::FormMultipleSelectHelper.position = :right
-    FightTheMelons::Helpers::FormMultipleSelectHelper.hidden_field = false
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.outer_class = nil
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.inner_class = nil
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.level_class = nil
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.alternate_class = 'alt'
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.alternate = false
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.position = :right
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.include_hidden_field = false
   end
   
   def test_cfms_empty
@@ -152,7 +152,7 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
   end
   
   def test_cfms_position_variable
-    FightTheMelons::Helpers::FormMultipleSelectHelper.position = :right
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.position = :right
     assert_dom_equal "<li>" +
       "<input id=\"nametest\" name=\"name[]\" type=\"checkbox\" value=\"test\" />" +
       "<label for=\"nametest\">test</label></li>",
@@ -171,7 +171,7 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
   end
   
   def test_cfms_inner_class_variable
-    FightTheMelons::Helpers::FormMultipleSelectHelper.inner_class = 'classtest'
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.inner_class = 'classtest'
     assert_dom_equal "<li class=\"classtest\">" +
       "<input id=\"nametest\" name=\"name[]\" type=\"checkbox\" value=\"test\" />" +
       "<label for=\"nametest\">test</label></li>",
@@ -221,7 +221,7 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
   end
   
   def test_cfms_alternate_variable
-    FightTheMelons::Helpers::FormMultipleSelectHelper.alternate = true
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.alternate = true
     assert_dom_equal "<li>" +
       "<input id=\"nametest1\" name=\"name[]\" type=\"checkbox\" value=\"test1\" />" +
       "<label for=\"nametest1\">test1</label></li>\n" +
@@ -239,7 +239,7 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
   end
   
   def test_cfms_alternate_class_variable
-    FightTheMelons::Helpers::FormMultipleSelectHelper.alternate_class = 'other'
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.alternate_class = 'other'
     assert_dom_equal "<li>" +
       "<input id=\"nametest1\" name=\"name[]\" type=\"checkbox\" value=\"test1\" />" +
       "<label for=\"nametest1\">test1</label></li>\n" +
@@ -331,7 +331,7 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
   
   def test_ms_outer_class_variable
     @f = Father.new
-    FightTheMelons::Helpers::FormMultipleSelectHelper.outer_class = 'classtest'
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.outer_class = 'classtest'
     assert_dom_equal "<ul class=\"classtest\"><li>" +
       "<input id=\"f_method_for_test_test\" name=\"f[method_for_test][]\" " +
       "type=\"checkbox\" value=\"test\" />" +
@@ -348,23 +348,23 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
     @f = Father.new
     assert_dom_equal "<ul><li>" +
       "<input id=\"f_method_for_test_test\" name=\"f[method_for_test][]\" type=\"checkbox\" value=\"test\" />" +
-      "<label for=\"f_method_for_test_test\">test</label></li>" +
-      "<input type=\"hidden\" name=\"f[method_for_test][]\" value=\"\" /></ul>",
-      multiple_select('f', 'method_for_test', ['test'], :hidden_field => true)
+      "<label for=\"f_method_for_test_test\">test</label></li></ul>\n" +
+      "<input type=\"hidden\" name=\"f[method_for_test][]\" value=\"\" />",
+      multiple_select('f', 'method_for_test', ['test'], :include_hidden_field => true)
   end
   
   def test_ms_hidden_field_variable
     @f = Father.new
-    FightTheMelons::Helpers::FormMultipleSelectHelper.hidden_field = true
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.include_hidden_field = true
     assert_dom_equal "<ul><li>" +
       "<input id=\"f_method_for_test_test\" name=\"f[method_for_test][]\" type=\"checkbox\" value=\"test\" />" +
-      "<label for=\"f_method_for_test_test\">test</label></li>" +
-      "<input type=\"hidden\" name=\"f[method_for_test][]\" value=\"\" /></ul>",
+      "<label for=\"f_method_for_test_test\">test</label></li></ul>\n" +
+      "<input type=\"hidden\" name=\"f[method_for_test][]\" value=\"\" />",
       multiple_select('f', 'method_for_test', ['test'])
     assert_dom_equal "<ul><li>" +
       "<input id=\"f_method_for_test_test\" name=\"f[method_for_test][]\" type=\"checkbox\" value=\"test\" />" +
       "<label for=\"f_method_for_test_test\">test</label></li></ul>",
-      multiple_select('f', 'method_for_test', ['test'], :hidden_field => false)
+      multiple_select('f', 'method_for_test', ['test'], :include_hidden_field => false)
   end
   
   def test_cms
@@ -594,7 +594,7 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
   end
   
   def test_cftfms_level_class_variable
-    FightTheMelons::Helpers::FormMultipleSelectHelper.level_class = 'lvl'
+    FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.level_class = 'lvl'
     assert_dom_equal "<li class=\"lvl0\">" +
       "<input id=\"name8\" name=\"name[]\" type=\"checkbox\" value=\"8\" />" +
       "<label for=\"name8\">Node 3.1</label></li>\n" +
