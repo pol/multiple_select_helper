@@ -330,6 +330,7 @@ module ActionView #:nodoc:
       
       def to_multiple_select_tag(name, container, options)
         selected_items = options.has_key?(:selected_items) ? options[:selected_items] : value
+        selected_items ||= []
         outer_class = (options[:outer_class] or
           FormMultipleSelectHelperConfiguration.outer_class)
         include_hidden_field = options[:include_hidden_field].nil? ?
@@ -345,6 +346,8 @@ module ActionView #:nodoc:
       end
       
       def to_collection_multiple_select_tag(name, collection, value_method, text_method, options)
+        selected_items = options.has_key?(:selected_items) ? options[:selected_items] : value
+        selected_items ||= []
         outer_class = (options[:outer_class] or
           FormMultipleSelectHelperConfiguration.outer_class)
         include_hidden_field = options[:include_hidden_field].nil? ?
@@ -353,13 +356,15 @@ module ActionView #:nodoc:
         content_tag(
           FormMultipleSelectHelperConfiguration.list_tags[0],
           checkboxes_from_collection_for_multiple_select(
-            name, collection, value_method, text_method, value, options
+            name, collection, value_method, text_method, selected_items, options
           ),
           :class => outer_class
         ) + (include_hidden_field ? "\n" + hidden_field_tag("#{name}[]", '', :id => nil) : '')
       end
       
       def to_tree_multiple_select_tag(name, nodes, value_method, text_method, options)
+        selected_items = options.has_key?(:selected_items) ? options[:selected_items] : value
+        selected_items ||= []
         outer_class = (options[:outer_class] or
           FormMultipleSelectHelperConfiguration.outer_class)
         include_hidden_field = options[:include_hidden_field].nil? ?
@@ -368,7 +373,7 @@ module ActionView #:nodoc:
         content_tag(
           FormMultipleSelectHelperConfiguration.list_tags[0],
           checkboxes_from_tree_for_multiple_select(
-            name, nodes, value_method, text_method, value, options
+            name, nodes, value_method, text_method, selected_items, options
           ),
           :class => outer_class
         ) + (include_hidden_field ? "\n" + hidden_field_tag("#{name}[]", '', :id => nil) : '')

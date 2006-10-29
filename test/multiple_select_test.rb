@@ -329,6 +329,26 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       multiple_select('f', 'method_for_test', [])
   end
   
+  def test_ms_selected_items
+    @n = Node.new
+    assert_dom_equal '<ul><li>' +
+      '<input id="n_selected_some_1" name="n[selected_some][]" type="checkbox" value="1" />' +
+      '<label for="n_selected_some_1">1</label></li>' + "\n" + '<li>' +
+      '<input id="n_selected_some_2" name="n[selected_some][]" type="checkbox" value="2" checked="checked" />' +
+      '<label for="n_selected_some_2">2</label></li></ul>',
+      multiple_select('n', 'selected_some', [1, 2], :selected_items => [2] )    
+  end
+  
+  def test_ms_selected_items_nil
+    @n = Node.new
+    assert_dom_equal '<ul><li>' +
+      '<input id="n_selected_some_1" name="n[selected_some][]" type="checkbox" value="1" />' +
+      '<label for="n_selected_some_1">1</label></li>' + "\n" + '<li>' +
+      '<input id="n_selected_some_2" name="n[selected_some][]" type="checkbox" value="2" />' +
+      '<label for="n_selected_some_2">2</label></li></ul>',
+      multiple_select('n', 'selected_some', [1, 2], :selected_items => nil )    
+  end
+  
   def test_ms_outer_class_variable
     @f = Father.new
     FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.outer_class = 'classtest'
@@ -365,6 +385,16 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       "<input id=\"f_method_for_test_test\" name=\"f[method_for_test][]\" type=\"checkbox\" value=\"test\" />" +
       "<label for=\"f_method_for_test_test\">test</label></li></ul>",
       multiple_select('f', 'method_for_test', ['test'], :include_hidden_field => false)
+  end
+  
+  def test_ms_nil_value
+    @n = Node.new
+    assert_dom_equal '<ul><li>' +
+      '<input id="n_selected_nil_value1" name="n[selected_nil][]" type="checkbox" value="value1" />' +
+      '<label for="n_selected_nil_value1">item1</label></li>' + "\n" + '<li>' +
+      '<input id="n_selected_nil_value2" name="n[selected_nil][]" type="checkbox" value="value2" />' +
+      '<label for="n_selected_nil_value2">item2</label></li></ul>',
+      multiple_select('n', 'selected_nil', {'item1' => 'value1', 'item2' => 'value2'} )
   end
   
   def test_cms
@@ -451,6 +481,70 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
        collection_multiple_select('f', 'son_ids', [], :id, :name)
   end
   
+  def test_cms_selected_items
+    Father.class_eval 'has_many :sons'
+    Son.class_eval 'belongs_to :father'
+    
+    @f = Father.new
+    @f.son_ids = []
+    
+    assert_dom_equal "<ul><li>" +
+      "<input id=\"f_son_ids_1\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"1\" checked=\"checked\" />" +
+      "<label for=\"f_son_ids_1\">Son 1</label></li>\n" +
+      "<li><input id=\"f_son_ids_2\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"2\" checked=\"checked\" />" +
+      "<label for=\"f_son_ids_2\">Son 2</label></li>\n" +
+      "<li><input id=\"f_son_ids_3\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"3\" checked=\"checked\" />" +
+      "<label for=\"f_son_ids_3\">Son 3</label></li>\n" +
+      "<li><input id=\"f_son_ids_4\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"4\" />" +
+      "<label for=\"f_son_ids_4\">Son 4</label></li>\n" +
+      "<li><input id=\"f_son_ids_5\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"5\" />" +
+      "<label for=\"f_son_ids_5\">Son 5</label></li>\n" +
+      "<li><input id=\"f_son_ids_6\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"6\" />" +
+      "<label for=\"f_son_ids_6\">Son 6</label></li>\n" +
+      "<li><input id=\"f_son_ids_7\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"7\" />" +
+      "<label for=\"f_son_ids_7\">Son 7</label></li></ul>",
+      collection_multiple_select('f', 'son_ids', Son.find(:all), :id, :name, :selected_items => [1, 2, 3])
+  end
+  
+  def test_cms_selected_items_nil
+    Father.class_eval 'has_many :sons'
+    Son.class_eval 'belongs_to :father'
+    
+    @f = Father.new
+    @f.son_ids = []
+    
+    assert_dom_equal "<ul><li>" +
+      "<input id=\"f_son_ids_1\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"1\" />" +
+      "<label for=\"f_son_ids_1\">Son 1</label></li>\n" +
+      "<li><input id=\"f_son_ids_2\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"2\" />" +
+      "<label for=\"f_son_ids_2\">Son 2</label></li>\n" +
+      "<li><input id=\"f_son_ids_3\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"3\" />" +
+      "<label for=\"f_son_ids_3\">Son 3</label></li>\n" +
+      "<li><input id=\"f_son_ids_4\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"4\" />" +
+      "<label for=\"f_son_ids_4\">Son 4</label></li>\n" +
+      "<li><input id=\"f_son_ids_5\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"5\" />" +
+      "<label for=\"f_son_ids_5\">Son 5</label></li>\n" +
+      "<li><input id=\"f_son_ids_6\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"6\" />" +
+      "<label for=\"f_son_ids_6\">Son 6</label></li>\n" +
+      "<li><input id=\"f_son_ids_7\" name=\"f[son_ids][]\" " +
+      "type=\"checkbox\" value=\"7\" />" +
+      "<label for=\"f_son_ids_7\">Son 7</label></li></ul>",
+      collection_multiple_select('f', 'son_ids', Son.find(:all), :id, :name, :selected_items => nil)
+  end
+  
   def test_tms
     @n = Node.new
     assert_dom_equal "<ul><li>" +
@@ -479,6 +573,30 @@ class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
       tree_multiple_select('n', 'selected_some', nodes(:n32).children, :id, :name)
     assert_dom_equal "<ul></ul>",
       tree_multiple_select('n', 'selected_some', nodes(:n33).children, :id, :name)
+  end
+  
+  def test_tms_selected_items
+    @n = Node.new
+    assert_dom_equal "<ul><li>" +
+      "<input id=\"n_selected_none_11\" name=\"n[selected_none][]\" " +
+      "type=\"checkbox\" value=\"11\" checked=\"checked\" />" +
+      "<label for=\"n_selected_none_11\">Node 3.2.1</label></li>\n" +
+      "<li><input id=\"n_selected_none_12\" name=\"n[selected_none][]\" " +
+      "type=\"checkbox\" value=\"12\" />" +
+      "<label for=\"n_selected_none_12\">Node 3.2.2</label></li></ul>",
+      tree_multiple_select('n', 'selected_none', nodes(:n32).children, :id, :name, :selected_items => [11])
+  end
+  
+  def test_tms_selected_items_nil
+    @n = Node.new
+    assert_dom_equal "<ul><li>" +
+      "<input id=\"n_selected_none_11\" name=\"n[selected_none][]\" " +
+      "type=\"checkbox\" value=\"11\" />" +
+      "<label for=\"n_selected_none_11\">Node 3.2.1</label></li>\n" +
+      "<li><input id=\"n_selected_none_12\" name=\"n[selected_none][]\" " +
+      "type=\"checkbox\" value=\"12\" />" +
+      "<label for=\"n_selected_none_12\">Node 3.2.2</label></li></ul>",
+      tree_multiple_select('n', 'selected_none', nodes(:n32).children, :id, :name, :selected_items => nil)
   end
     
   def test_cftfms

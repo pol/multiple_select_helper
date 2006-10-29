@@ -16,6 +16,13 @@ class Node < ActiveRecord::Base #:nodoc:
    [12]
   end
   
-  def selecte_some=
+  def selected_some=
+  end
+  
+  def selected_nil
+    nil
+  end
+  
+  def selected_nil=
   end
 end
