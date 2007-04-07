@@ -3,8 +3,8 @@ require 'action_view'
 
 module FightTheMelons #:nodoc:
   module Helpers #:nodoc:
-  	
-    # Some of the most used variables so you can setup them per application or
+    
+  	# Some of the most used variables so you can setup them per application or
     # per controller instead of everytime you use one of the helpers.
     module FormMultipleSelectHelperConfiguration      
       # Class used in the ul tag that wraps all the checkboxes.
@@ -30,11 +30,7 @@ module FightTheMelons #:nodoc:
       # Establish the position of the checkbox with respect the label.
       attr_accessor :position
       module_function :position, :position=
-      
-      # Determines if a hidden field should be added to the checkboxes.
-      attr_accessor :include_hidden_field
-      module_function :include_hidden_field, :include_hidden_field=
-      
+            
       # Establish the name of the tags used to wrap the elements.
       attr_accessor :list_tags
       module_function :list_tags, :list_tags=
@@ -47,10 +43,7 @@ module FightTheMelons #:nodoc:
       
       # Default value for position is ':right'
       self.position = :right
-      
-      # Default value for include_hidden_field is false.
-      self.include_hidden_field = false
-      
+            
       # Default value for list_tags is ['ul', 'li']
       self.list_tags = ['ul', 'li']
     end
@@ -61,8 +54,9 @@ module FightTheMelons #:nodoc:
       include ERB::Util
       include ActionView::Helpers::FormTagHelper
       include ActionView::Helpers::TagHelper
-      
-      # Returns a list of checkboxes usign
+      include ActionView::Helpers
+            
+      # Returns a list of checkboxes using
       # checkboxes_from_collection_for_multiple_select to generate the list of
       # checkboxes.
       #
@@ -71,11 +65,18 @@ module FightTheMelons #:nodoc:
       #
       # The option <tt>:outer_class</tt> specifies the HTML class of the ul
       # element that wraps the checkbox list.
-      #
-      # <tt>:include_hidden_field</tt> option adds a hidden field tag with the
-      # same name as the checkboxes so the array always exist in the parameters
-      # returned to the controller.
       def collection_multiple_select(
+        object, method, collection, value_method, text_method, options = {}
+      )
+        InstanceTag.new(
+          object, method, self, nil, options.delete(:object)
+        ).to_collection_multiple_select_tag(
+          "#{object}[#{method}]", collection, value_method, text_method, options
+        )
+      end
+      
+      # Same as collection_multiple_select but without an associated object.
+      def collection_multiple_select_tag(
         name, collection, value_method, text_method, options = {}
       )
         multiple_select_with_path(name, options) do |selected_items|
@@ -93,11 +94,14 @@ module FightTheMelons #:nodoc:
       #
       # The option <tt>:outer_class</tt> specifies the HTML class of the ul
       # element that wraps the checkbox list.
-      #
-      # <tt>:include_hidden_field</tt> option adds a hidden field tag with the
-      # same name as the checkboxes so the array always exist in the parameters
-      # returned to the controller.
-      def multiple_select(name, container, options = {})
+      def multiple_select(object, method, container, options = {})
+        InstanceTag.new(
+          object, method, self, nil, options.delete(:object)
+        ).to_multiple_select_tag("#{object}[#{method}]", container, options)
+      end
+      
+      # Same as multiple_select but without an associated object.
+      def multiple_select_tag(name, container, options = {})
         multiple_select_with_path(name, options) do |selected_items|
           checkboxes_for_multiple_select(
             name, container, selected_items, options
@@ -105,21 +109,26 @@ module FightTheMelons #:nodoc:
         end
       end
       
-      # Create a list of hierarchical checkboxes using
-      # checkboxes_from_tree_for_multiple_select. The hierarchy must respond to
-      # <tt>:child_method</tt> option to get the direct children of the actual
-      # node. The default value is <tt>children</tt>.
+      # Create a list of hierarchical checkboxes for the provides object and
+      # method.
+      # The hierarchy must respond to <tt>:child_method</tt> to get the direct
+      # children of the actual node. The default value is <tt>children</tt>.
       #
       # If a <tt>:selected_items</tt> option is provided it will be used as
       # selection.
       #
       # The option <tt>:outer_class</tt> specifies the HTML class of the ul
       # element that wraps the checkbox hierarchy.
-      #
-      # <tt>:include_hidden_field</tt> option adds a hidden field tag with the
-      # same name as the checkboxes so the array always exist in the parameters
-      # returned to the controller.
-      def tree_multiple_select(
+      def tree_multiple_select(object, method, nodes, value_method, text_method, options = {})
+        InstanceTag.new(
+          object, method, self, nil, options.delete(:object)
+        ).to_tree_multiple_select_tag(
+          "#{object}[#{method}]", nodes, value_method, text_method, options
+        )
+      end
+      
+      # Same as tree_multiple_select but without an associated object.
+      def tree_multiple_select_tag(
         name, nodes, value_method, text_method, options = {}
       )
         multiple_select_with_path(name, options) do |selected_items|
@@ -206,7 +215,6 @@ module FightTheMelons #:nodoc:
             [node.send(text_method), node.send(value_method)],
             selected_items, alt, root_options
           ) do
-            
             children = node.send(child_method)
             branch = if not (depth == 0 || children.size == 0)
 	            "\n" + content_tag(
@@ -239,17 +247,11 @@ module FightTheMelons #:nodoc:
       # values and the "first" as label text. Hashes are turned into this form
       # automatically, so the keys beceome "first" and the values become
       # "lasts". If <tt>selected_items</tt> is not empty, the matching
-      # elements will get the selected attribute in its checkbox. If the option
-      # <tt>:label_position</tt> is provided the specified position is used
-      # (<tt>:left</tt> or <tt>:right</tt>), otherwise the default
-      # <tt>:right</tt> position is used.
+      # elements will get the selected attribute in its checkbox.
       #
-      # The <tt>:inner_class</tt> option specifies the base class of the li
-      # that surrounds the checkbox and the label.
-      #
-      # The <tt>:alternate_class</tt> option allow to specify
-      # a additional class that will be used in odd elements if
-      # <tt>:alternate</tt> is <tt>true</tt>.
+      # The <tt>:alternate</tt> option determines if the classes of the items
+      # should alternate. The default value for <tt>:alternate</tt> is
+      # <tt>false</tt>.
       #
       # The <tt>:initial_alternate</tt> option specifies if the first element
       # should have the alternate style or not. By default the first element
@@ -266,8 +268,8 @@ module FightTheMelons #:nodoc:
       # disabled or not. Disabled can be <tt>true</tt>, <tt>false</tt> or an
       # array of values that will be disabled. By default the checkbox will not
       # be disabled.
-      def checkboxes_for_multiple_select(name, container, selected_items = [],
-        options = {}
+      def checkboxes_for_multiple_select(
+        name, container, selected_items = [], options = {}
       )
         container = container.to_a if Hash === container
         ialternate = options[:alternate].nil? ?
@@ -286,29 +288,27 @@ module FightTheMelons #:nodoc:
         checkboxes.join("\n")
       end
     
-    private
+    protected
       
       # Common body for multiple_select, collection_multiple_select and
       # tree_multiple_select.
       def multiple_select_with_path(name, options, &block)
-        selected_items = (options[:selected_items] or [])
+        val = value(object) if respond_to? :value
+        selected_items = options.has_key?(:selected_items) ? options[:selected_items] : val
+        selected_items ||= []
         outer_class = (options[:outer_class] or
           FormMultipleSelectHelperConfiguration.outer_class)
-        include_hidden_field = options[:include_hidden_field].nil? ?
-          FormMultipleSelectHelperConfiguration.include_hidden_field :
-          options[:include_hidden_field]
         
         checkboxes = yield(selected_items)
-        
-        hfield = include_hidden_field ?
-          "\n" + hidden_field_tag("#{name}[]", '', :id => nil) :
-          ''
-        
+                
         content_tag(
           FormMultipleSelectHelperConfiguration.list_tags[0],
-          checkboxes, :class => outer_class
-        ) + hfield
+          checkboxes,
+          :class => outer_class
+        )
       end
+      
+    private
       
       # Accepts an item and returns a checkbox tag. If the item respond to first
       # and last (such a two element array), the "last" serve as checkbox value
@@ -316,6 +316,22 @@ module FightTheMelons #:nodoc:
       # <tt>selected_items</tt> its checkbox will be selected. The
       # <tt>is_alternate</tt> determines if the checkbox will use the alternate
       # class name or not.
+      #
+      # If the option <tt>:position</tt> is provided the specified
+      # position is used (<tt>:left</tt> or <tt>:right</tt>), otherwise the
+      # default <tt>:right</tt> position is used.
+      #
+      # The <tt>:inner_class</tt> option specifies the base class of the li that
+      # surrounds the checkbox and the label.
+      #
+      # The <tt>:alternate_class</tt> option allow to specify
+      # a additional class that will be used in the element if
+      # <tt>is_alternate</tt> is <tt>true</tt>.
+      #
+      # The <tt>:disabled</tt> option specifies if the checkbox will be rendered
+      # disabled or not. Disabled can be <tt>true</tt>, <tt>false</tt> or an
+      # array of values that will be disabled. By default the checkbox will not
+      # be disabled.
       def checkbox_for_multiple_select(
         name, item, selected_items = [], is_alternate = false, options = {}
       )
@@ -362,6 +378,39 @@ module FightTheMelons #:nodoc:
       def idfy(name)
         name = 'x' + name unless /^[a-zA-Z]/ =~ name
         name.scan(/[-a-zA-Z0-9_:.]+/).join('_')
+      end
+    end
+  end
+end
+
+module ActionView #:nodoc:
+  module Helpers #:nodoc:
+    class InstanceTag #:nodoc:
+      include FightTheMelons::Helpers::FormMultipleSelectHelper
+      include FightTheMelons::Helpers
+      
+      def to_multiple_select_tag(name, container, options)
+        multiple_select_with_path(name, options) do |selected_items|
+          checkboxes_for_multiple_select(
+            name, container, selected_items, options
+          )
+        end
+      end
+      
+      def to_collection_multiple_select_tag(name, collection, value_method, text_method, options)
+        multiple_select_with_path(name, options) do |selected_items|
+          checkboxes_from_collection_for_multiple_select(
+            name, collection, value_method, text_method, selected_items, options
+          )
+        end
+      end
+      
+      def to_tree_multiple_select_tag(name, nodes, value_method, text_method, options)
+        multiple_select_with_path(name, options) do |selected_items|
+          checkboxes_from_tree_for_multiple_select(
+            name, nodes, value_method, text_method, selected_items, options
+          )
+        end
       end
     end
   end
