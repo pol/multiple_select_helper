@@ -3,15 +3,23 @@ $:.unshift(File.dirname(__FILE__) + '/../lib')
 RAILS_ROOT = File.dirname(__FILE__)
 
 require 'rubygems'
+# For testing with Rails 1.1
+gem 'rails', '<1.2'
+gem 'activerecord', '<1.15'
+gem 'activesupport', '<1.4'
+gem 'actionpack', '<1.13'
+
+
 require 'test/unit'
 require 'active_record'
 require 'active_record/fixtures'
 require 'active_support/binding_of_caller'
 require 'active_support/breakpoint'
+require 'action_controller'
 require 'action_controller/assertions'
 require "#{File.dirname(__FILE__)}/../init"
 
-config = YAML::load(IO.read(File.dirname(__FILE__) + '/database.yml'))
+config = ActiveRecord::Base.configurations = YAML::load(IO.read(File.dirname(__FILE__) + '/database.yml'))
 ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + '/debug.log')
 ActiveRecord::Base.establish_connection(config[ENV['DB'] || 'sqlite3'])
 

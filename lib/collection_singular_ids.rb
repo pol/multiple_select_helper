@@ -1,30 +1,27 @@
 module ActiveRecord #:nodoc:
   module Associations #:nodoc:
     module ClassMethods #:nodoc:
-      
-      alias_method :has_many_without_ids, :has_many
-      alias_method :has_and_belongs_to_many_without_ids, :has_and_belongs_to_many
-      
-      def has_many_with_ids(association_id, options = {}, &extension)
-        has_many_without_ids(association_id, options, &extension)
-        
-        reflection = create_has_many_reflection(association_id, options, &extension)
-        define_method("#{reflection.name.to_s.singularize}_ids") do
-          send(reflection.name).map(&:id)
-        end unless options[:through]
-      end
-      
-      def has_and_belongs_to_many_with_ids(association_id, options = {}, &extension)
-        has_and_belongs_to_many_without_ids(association_id, options, &extension)
-        
-        reflection = create_has_and_belongs_to_many_reflection(association_id, options, &extension)
+    private
+      def collection_accessor_methods(reflection, association_proxy_class)
+        # Taken from Rails 1.2.2
+        collection_reader_method(reflection, association_proxy_class)
+
+        define_method("#{reflection.name}=") do |new_value|
+          # Loads proxy class instance (defined in collection_reader_method) if not already loaded
+          association = send(reflection.name)
+          association.replace(new_value)
+          association
+        end
+
         define_method("#{reflection.name.to_s.singularize}_ids") do
           send(reflection.name).map(&:id)
         end
+
+        define_method("#{reflection.name.to_s.singularize}_ids=") do |new_value|
+          ids = (new_value || []).reject { |nid| nid.blank? }
+          send("#{reflection.name}=", reflection.class_name.constantize.find(ids))
+        end
       end
-      
-      alias_method :has_many, :has_many_with_ids
-      alias_method :has_and_belongs_to_many, :has_and_belongs_to_many_with_ids
     end
   end
 end

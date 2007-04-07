@@ -30,11 +30,7 @@ module FightTheMelons #:nodoc:
       # Establish the position of the checkbox with respect the label.
       attr_accessor :position
       module_function :position, :position=
-      
-      # Determines if a hidden field should be added to the checkboxes.
-      attr_accessor :include_hidden_field
-      module_function :include_hidden_field, :include_hidden_field=
-      
+            
       # Establish the name of the tags used to wrap the elements.
       attr_accessor :list_tags
       module_function :list_tags, :list_tags=
@@ -47,10 +43,7 @@ module FightTheMelons #:nodoc:
       
       # Default value for position is ':right'
       self.position = :right
-      
-      # Default value for include_hidden_field is false.
-      self.include_hidden_field = false
-      
+            
       # Default value for list_tags is ['ul', 'li']
       self.list_tags = ['ul', 'li']
     end
@@ -82,6 +75,17 @@ module FightTheMelons #:nodoc:
         )
       end
       
+      # Same as collection_multiple_select but without an associated object.
+      def collection_multiple_select_tag(
+        name, collection, value_method, text_method, options = {}
+      )
+        multiple_select_with_path(name, options) do |selected_items|
+          checkboxes_from_collection_for_multiple_select(name, collection,
+            value_method, text_method, selected_items, options
+          )
+        end
+      end
+      
       # Create a list of checkboxes. See checkboxes_for_multiple_select for the
       # required format of the choices parameter.
       #
@@ -94,6 +98,15 @@ module FightTheMelons #:nodoc:
         InstanceTag.new(
           object, method, self, nil, options.delete(:object)
         ).to_multiple_select_tag("#{object}[#{method}]", container, options)
+      end
+      
+      # Same as multiple_select but without an associated object.
+      def multiple_select_tag(name, container, options = {})
+        multiple_select_with_path(name, options) do |selected_items|
+          checkboxes_for_multiple_select(
+            name, container, selected_items, options
+          )
+        end
       end
       
       # Create a list of hierarchical checkboxes for the provides object and
@@ -112,6 +125,17 @@ module FightTheMelons #:nodoc:
         ).to_tree_multiple_select_tag(
           "#{object}[#{method}]", nodes, value_method, text_method, options
         )
+      end
+      
+      # Same as tree_multiple_select but without an associated object.
+      def tree_multiple_select_tag(
+        name, nodes, value_method, text_method, options = {}
+      )
+        multiple_select_with_path(name, options) do |selected_items|
+          checkboxes_from_tree_for_multiple_select(
+            name, nodes, value_method, text_method, selected_items, options
+          )
+        end
       end
       
       # Returns a string of checkboxes that have been compiled iterating over
@@ -249,6 +273,26 @@ module FightTheMelons #:nodoc:
         checkboxes.join("\n")
       end
       
+    protected
+      # Common body for multiple_select, collection_multiple_select and
+      # tree_multiple_select.
+      def multiple_select_with_path(name, options, &block)
+        #val = value(object) if respond_to? :value # For Rails >=1.2
+        val = value if respond_to? :value # For Rails <1.2
+        selected_items = options.has_key?(:selected_items) ? options[:selected_items] : val
+        selected_items ||= []
+        outer_class = (options[:outer_class] or
+          FormMultipleSelectHelperConfiguration.outer_class)
+
+        checkboxes = yield(selected_items)
+
+        content_tag(
+          FormMultipleSelectHelperConfiguration.list_tags[0],
+          checkboxes,
+          :class => outer_class
+        )
+      end
+
     private
       
       # Accepts an item and returns a checkbox tag. If the item respond to first
@@ -329,54 +373,27 @@ module ActionView #:nodoc:
       include FightTheMelons::Helpers
       
       def to_multiple_select_tag(name, container, options)
-        selected_items = options.has_key?(:selected_items) ? options[:selected_items] : value
-        selected_items ||= []
-        outer_class = (options[:outer_class] or
-          FormMultipleSelectHelperConfiguration.outer_class)
-        include_hidden_field = options[:include_hidden_field].nil? ?
-          FormMultipleSelectHelperConfiguration.include_hidden_field :
-          options[:include_hidden_field]
-        content_tag(
-          FormMultipleSelectHelperConfiguration.list_tags[0],
+        multiple_select_with_path(name, options) do |selected_items|
           checkboxes_for_multiple_select(
             name, container, selected_items, options
-          ),
-          :class => outer_class
-        ) + (include_hidden_field ? "\n" + hidden_field_tag("#{name}[]", '', :id => nil) : '')
+          )
+        end
       end
       
       def to_collection_multiple_select_tag(name, collection, value_method, text_method, options)
-        selected_items = options.has_key?(:selected_items) ? options[:selected_items] : value
-        selected_items ||= []
-        outer_class = (options[:outer_class] or
-          FormMultipleSelectHelperConfiguration.outer_class)
-        include_hidden_field = options[:include_hidden_field].nil? ?
-          FormMultipleSelectHelperConfiguration.include_hidden_field :
-          options[:include_hidden_field]
-        content_tag(
-          FormMultipleSelectHelperConfiguration.list_tags[0],
+        multiple_select_with_path(name, options) do |selected_items|
           checkboxes_from_collection_for_multiple_select(
             name, collection, value_method, text_method, selected_items, options
-          ),
-          :class => outer_class
-        ) + (include_hidden_field ? "\n" + hidden_field_tag("#{name}[]", '', :id => nil) : '')
+          )
+        end
       end
       
       def to_tree_multiple_select_tag(name, nodes, value_method, text_method, options)
-        selected_items = options.has_key?(:selected_items) ? options[:selected_items] : value
-        selected_items ||= []
-        outer_class = (options[:outer_class] or
-          FormMultipleSelectHelperConfiguration.outer_class)
-        include_hidden_field = options[:include_hidden_field].nil? ?
-          FormMultipleSelectHelperConfiguration.include_hidden_field :
-          options[:include_hidden_field]
-        content_tag(
-          FormMultipleSelectHelperConfiguration.list_tags[0],
+        multiple_select_with_path(name, options) do |selected_items|
           checkboxes_from_tree_for_multiple_select(
             name, nodes, value_method, text_method, selected_items, options
-          ),
-          :class => outer_class
-        ) + (include_hidden_field ? "\n" + hidden_field_tag("#{name}[]", '', :id => nil) : '')
+          )
+        end
       end
     end
   end
