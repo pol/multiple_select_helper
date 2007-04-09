@@ -78,13 +78,6 @@ All three posibilites supports the following options in the options hash:
              disabled is an array only the checkboxes in the array will be
              disabled. If disabled is +false+ no checkboxes will be disabled.
              The default is +false+.
-[+include_hidden_field+] Adds a hidden field input tag as the last element of
-                         the list with a zero length string as value and the
-                         same name of the checkboxes so you always have the
-                         parameter returned in your controller. Keep in mind
-                         that this options make that you always have a
-                         <tt>""</tt> element in your parameter array. The
-                         default value for this options is +false+.
 
 Besides the options above described the two tree methods supports also the
 following options:
@@ -104,6 +97,10 @@ following options:
                 and the alternative class if they are also specified.
 [+initial_level+] Specifies the first level that will be used as preffix of
                   +level_class+. The default is 0.
+
+There used to be an option called +include_hidden_field+ but now it is not
+more an option and is always enforced +true+ so you always get a param value
+in your controllers, even when the users check no checkbox.
 
 Since 20060917 version you could establish default option for some of the most
 used parameters (+outer_class+, +inner_class+, +level_class+, +alternate+,
@@ -142,7 +139,7 @@ you could use something like:
  # In the view
  <%=
    collection_multiple_select(
-     'person', 'fruit_ids', Fruit.find(:all), :id, :name, :selected_items => @person.fruit_ids
+     'person', 'fruit_ids', Fruit.find(:all), :id, :name
    )
  %>
  
@@ -154,6 +151,11 @@ are editing.
 
 == Version history
 
+- 20070409
+  - The old hidden_field toggled by include_hidden_field is now always
+    included (seems like is really needed in Rails 1.2).
+  - In some situations with the object-method versions of the helpers
+    Rails will fail saying that content_tag expects 3 parameters instead of 2.
 - 20070407
   - Merge with the "Object Method Parameters" branch.
   - Old versions of the methods are still accessible in the "_tag" versions.
