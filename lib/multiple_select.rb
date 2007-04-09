@@ -55,6 +55,10 @@ module FightTheMelons #:nodoc:
       include ActionView::Helpers::FormTagHelper
       include ActionView::Helpers::TagHelper
       include ActionView::Helpers
+      
+      # There is another content_tag in ActionView::Helpers::InstanceTag, but
+      # we want the one in ActionView::Helpers::TagHelper.
+      alias av_content_tag content_tag
             
       # Returns a list of checkboxes using
       # checkboxes_from_collection_for_multiple_select to generate the list of
@@ -214,7 +218,7 @@ module FightTheMelons #:nodoc:
           ) do
             children = node.send(child_method)
             branch = if not (depth == 0 || children.size == 0)
-	            "\n" + content_tag(
+	            "\n" + av_content_tag(
 	              FormMultipleSelectHelperConfiguration.list_tags[0],
 	              checkboxes_from_tree_for_multiple_select(
                     name, children, value_method, text_method, selected_items,
@@ -253,6 +257,18 @@ module FightTheMelons #:nodoc:
       # The <tt>:initial_alternate</tt> option specifies if the first element
       # should have the alternate style or not. By default the first element
       # does not have the alternate style.
+      #
+      # If the option <tt>:position</tt> is provided the specified
+      # position is used (<tt>:left</tt> or <tt>:right</tt>), otherwise the
+      # default <tt>:right</tt> position is used.
+      #
+      # The <tt>:inner_class</tt> option specifies the base class of the div that
+      # surrounds the checkbox and the label.
+      #
+      # The <tt>:disabled</tt> option specifies if the checkbox will be rendered
+      # disabled or not. Disabled can be <tt>true</tt>, <tt>false</tt> or an
+      # array of values that will be disabled. By default the checkbox will not
+      # be disabled.
       def checkboxes_for_multiple_select(
         name, container, selected_items = [], options = {}
       )
@@ -283,16 +299,16 @@ module FightTheMelons #:nodoc:
         selected_items ||= []
         outer_class = (options[:outer_class] or
           FormMultipleSelectHelperConfiguration.outer_class)
-
+        
         checkboxes = yield(selected_items)
-
-        content_tag(
+                
+        av_content_tag(
           FormMultipleSelectHelperConfiguration.list_tags[0],
           checkboxes,
           :class => outer_class
-        )
+        ) << "\n" << hidden_field_tag("#{name}[]", '', :id => nil)
       end
-
+      
     private
       
       # Accepts an item and returns a checkbox tag. If the item respond to first
@@ -317,7 +333,9 @@ module FightTheMelons #:nodoc:
       # disabled or not. Disabled can be <tt>true</tt>, <tt>false</tt> or an
       # array of values that will be disabled. By default the checkbox will not
       # be disabled.
-      def checkbox_for_multiple_select(name, item, selected_items = [], is_alternate = false, options = {})
+      def checkbox_for_multiple_select(
+        name, item, selected_items = [], is_alternate = false, options = {}
+      )
         position = (options[:position] or
           FormMultipleSelectHelperConfiguration.position)
         inner_class = (options[:inner_class] or
@@ -331,20 +349,20 @@ module FightTheMelons #:nodoc:
           is_disabled = is_disabled.include?(item.last) if is_disabled.respond_to?(:include?)
           item_id = idfy("#{name}#{item.last}")
           cbt = check_box_tag("#{name}[]", html_escape(item.last.to_s), is_selected, :id => item_id, :disabled => is_disabled)
-          lbt = content_tag('label', html_escape(item.first.to_s), :for => item_id)
+          lbt = av_content_tag('label', html_escape(item.first.to_s), :for => item_id)
         else
           is_selected = selected_items.include?(item)
           is_disabled = is_disabled.include?(item) if is_disabled.respond_to?(:include?)
           item_id = idfy("#{name}#{item.to_s}")
           cbt = check_box_tag("#{name}[]", html_escape(item.to_s), is_selected, :id => item_id, :disabled => is_disabled)
-          lbt = content_tag('label', html_escape(item.to_s), :for => item_id)
+          lbt = av_content_tag('label', html_escape(item.to_s), :for => item_id)
         end
         
         item_class = is_alternate ? "#{inner_class} #{alternate_class}".strip : inner_class
         
         extra = block_given? ? yield : ''
         
-        content_tag(
+        av_content_tag(
           FormMultipleSelectHelperConfiguration.list_tags[1],
           position == :left ? lbt + cbt + extra : cbt + lbt + extra,
           :class => item_class

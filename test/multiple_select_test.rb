@@ -237,6 +237,7 @@ END
     @f = Father.new
     assert_dom_equal <<END.strip, multiple_select('f', 'method_for_test', ['test'])
 <ul><li><input id="f_method_for_test_test" name="f[method_for_test][]" type="checkbox" value="test" /><label for="f_method_for_test_test">test</label></li></ul>
+<input name="f[method_for_test][]" type="hidden" value="" />
 END
   end
 
@@ -244,6 +245,7 @@ END
     @f = Father.new
     assert_dom_equal <<END.strip, multiple_select('f', 'method_for_test', ['test'], :outer_class => 'test_class')
 <ul class="test_class"><li><input id="f_method_for_test_test" name="f[method_for_test][]" type="checkbox" value="test" /><label for="f_method_for_test_test">test</label></li></ul>
+<input name="f[method_for_test][]" type="hidden" value="" />
 END
   end
 
@@ -251,36 +253,44 @@ END
     @f = Father.new
     assert_dom_equal <<END.strip, multiple_select('f', 'method_for_test_selected', ['test'])
 <ul><li><input checked="checked" id="f_method_for_test_selected_test" name="f[method_for_test_selected][]" type="checkbox" value="test" /><label for="f_method_for_test_selected_test">test</label></li></ul>
+<input name="f[method_for_test_selected][]" type="hidden" value="" />
 END
   end
   
   def test_ms_empty
     @f = Father.new
-    assert_dom_equal "<ul></ul>",
-      multiple_select('f', 'method_for_test', [])
+    assert_dom_equal <<END.strip, multiple_select('f', 'method_for_test', [])
+<ul></ul>
+<input name="f[method_for_test][]" type="hidden" value="" />
+END
   end
   
   def test_mst
     assert_dom_equal <<END.strip, multiple_select_tag('f', ['test'])
 <ul><li><input id="ftest" name="f[]" type="checkbox" value="test" /><label for="ftest">test</label></li></ul>
+<input name="f[]" type="hidden" value="" />
 END
   end
 
   def test_mst_with_outer_class
     assert_dom_equal <<END.strip, multiple_select_tag('f', ['test'], :outer_class => 'test_class')
 <ul class="test_class"><li><input id="ftest" name="f[]" type="checkbox" value="test" /><label for="ftest">test</label></li></ul>
+<input name="f[]" type="hidden" value="" />
 END
   end
 
   def test_mst_with_selected_items
     assert_dom_equal <<END.strip, multiple_select_tag('f', ['test'], :selected_items => ['test'])
 <ul><li><input checked="checked" id="ftest" name="f[]" type="checkbox" value="test" /><label for="ftest">test</label></li></ul>
+<input name="f[]" type="hidden" value="" />
 END
   end
   
   def test_mst_empty
-    assert_dom_equal "<ul></ul>",
-      multiple_select_tag('f', [])
+    assert_dom_equal <<END.strip, multiple_select_tag('f', [])
+<ul></ul>
+<input name="f[]" type="hidden" value="" />
+END
   end
   
   def test_ms_selected_items
@@ -288,6 +298,7 @@ END
     assert_dom_equal <<END.strip, multiple_select('n', 'selected_some', [1, 2], :selected_items => [2] )
 <ul><li><input id="n_selected_some_1" name="n[selected_some][]" type="checkbox" value="1" /><label for="n_selected_some_1">1</label></li>
 <li><input id="n_selected_some_2" name="n[selected_some][]" type="checkbox" value="2" checked="checked" /><label for="n_selected_some_2">2</label></li></ul>
+<input name="n[selected_some][]" type="hidden" value="" />
 END
   end
   
@@ -296,6 +307,7 @@ END
     assert_dom_equal <<END.strip, multiple_select('n', 'selected_some', [1, 2], :selected_items => nil )    
 <ul><li><input id="n_selected_some_1" name="n[selected_some][]" type="checkbox" value="1" /><label for="n_selected_some_1">1</label></li>
 <li><input id="n_selected_some_2" name="n[selected_some][]" type="checkbox" value="2" /><label for="n_selected_some_2">2</label></li></ul>
+<input name="n[selected_some][]" type="hidden" value="" />
 END
   end
   
@@ -304,10 +316,12 @@ END
     FightTheMelons::Helpers::FormMultipleSelectHelperConfiguration.outer_class = 'classtest'
     assert_dom_equal <<END.strip, multiple_select('f', 'method_for_test', ['test'])
 <ul class="classtest"><li><input id="f_method_for_test_test" name="f[method_for_test][]" type="checkbox" value="test" /><label for="f_method_for_test_test">test</label></li></ul>
+<input name="f[method_for_test][]" type="hidden" value="" />
 END
 
     assert_dom_equal <<END.strip, multiple_select('f', 'method_for_test', ['test'], :outer_class => 'testclass')
 <ul class="testclass"><li><input id="f_method_for_test_test" name="f[method_for_test][]" type="checkbox" value="test" /><label for="f_method_for_test_test">test</label></li></ul>
+<input name="f[method_for_test][]" type="hidden" value="" />
 END
   end
     
@@ -316,6 +330,7 @@ END
     assert_dom_equal <<END.strip, multiple_select('n', 'selected_nil', {'item1' => 'value1', 'item2' => 'value2'} )
 <ul><li><input id="n_selected_nil_value1" name="n[selected_nil][]" type="checkbox" value="value1" /><label for="n_selected_nil_value1">item1</label></li>
 <li><input id="n_selected_nil_value2" name="n[selected_nil][]" type="checkbox" value="value2" /><label for="n_selected_nil_value2">item2</label></li></ul>
+<input name="n[selected_nil][]" type="hidden" value="" />
 END
   end
   
@@ -334,6 +349,7 @@ END
 <li><input id="f_son_ids_5" name="f[son_ids][]" type="checkbox" value="5" /><label for="f_son_ids_5">Son 5</label></li>
 <li><input id="f_son_ids_6" name="f[son_ids][]" type="checkbox" value="6" /><label for="f_son_ids_6">Son 6</label></li>
 <li><input id="f_son_ids_7" name="f[son_ids][]" type="checkbox" value="7" /><label for="f_son_ids_7">Son 7</label></li></ul>
+<input name="f[son_ids][]" type="hidden" value="" />
 END
   end
   
@@ -352,6 +368,7 @@ END
 <li><input id="f_son_ids_5" name="f[son_ids][]" type="checkbox" value="5" /><label for="f_son_ids_5">Son 5</label></li>
 <li><input id="f_son_ids_6" name="f[son_ids][]" type="checkbox" value="6" /><label for="f_son_ids_6">Son 6</label></li>
 <li><input id="f_son_ids_7" name="f[son_ids][]" type="checkbox" value="7" /><label for="f_son_ids_7">Son 7</label></li></ul>
+<input name="f[son_ids][]" type="hidden" value="" />
 END
   end
   
@@ -370,6 +387,7 @@ END
 <li><input checked="checked" id="f_son_ids_5" name="f[son_ids][]" type="checkbox" value="5" /><label for="f_son_ids_5">Son 5</label></li>
 <li><input checked="checked" id="f_son_ids_6" name="f[son_ids][]" type="checkbox" value="6" /><label for="f_son_ids_6">Son 6</label></li>
 <li><input id="f_son_ids_7" name="f[son_ids][]" type="checkbox" value="7" /><label for="f_son_ids_7">Son 7</label></li></ul>
+<input name="f[son_ids][]" type="hidden" value="" />
 END
   end
   
@@ -380,8 +398,10 @@ END
     @f = Father.new
     @f.son_ids = []
     
-     assert_dom_equal "<ul></ul>",
-       collection_multiple_select('f', 'son_ids', [], :id, :name)
+     assert_dom_equal <<END.strip, collection_multiple_select('f', 'son_ids', [], :id, :name)
+<ul></ul>
+<input name="f[son_ids][]" type="hidden" value="" />
+END
   end
   
   def test_cmst
@@ -393,6 +413,7 @@ END
 <li><input id="sons5" name="sons[]" type="checkbox" value="5" /><label for="sons5">Son 5</label></li>
 <li><input id="sons6" name="sons[]" type="checkbox" value="6" /><label for="sons6">Son 6</label></li>
 <li><input id="sons7" name="sons[]" type="checkbox" value="7" /><label for="sons7">Son 7</label></li></ul>
+<input name="sons[]" type="hidden" value="" />
 END
   end
 
@@ -405,6 +426,7 @@ END
 <li><input id="sons5" name="sons[]" type="checkbox" value="5" /><label for="sons5">Son 5</label></li>
 <li><input id="sons6" name="sons[]" type="checkbox" value="6" /><label for="sons6">Son 6</label></li>
 <li><input id="sons7" name="sons[]" type="checkbox" value="7" /><label for="sons7">Son 7</label></li></ul>
+<input name="sons[]" type="hidden" value="" />
 END
   end
 
@@ -417,12 +439,15 @@ END
 <li><input checked="checked" id="sons5" name="sons[]" type="checkbox" value="5" /><label for="sons5">Son 5</label></li>
 <li><input checked="checked" id="sons6" name="sons[]" type="checkbox" value="6" /><label for="sons6">Son 6</label></li>
 <li><input id="sons7" name="sons[]" type="checkbox" value="7" /><label for="sons7">Son 7</label></li></ul>
+<input name="sons[]" type="hidden" value="" />
 END
   end
 
   def test_cmst_without_items
-     assert_dom_equal "<ul></ul>",
-       collection_multiple_select_tag('sons', [], :id, :name)
+     assert_dom_equal <<END.strip, collection_multiple_select_tag('sons', [], :id, :name)
+<ul></ul>
+<input name="sons[]" type="hidden" value="" />
+END
   end
   
   def test_cms_selected_items
@@ -440,6 +465,7 @@ END
 <li><input id="f_son_ids_5" name="f[son_ids][]" type="checkbox" value="5" /><label for="f_son_ids_5">Son 5</label></li>
 <li><input id="f_son_ids_6" name="f[son_ids][]" type="checkbox" value="6" /><label for="f_son_ids_6">Son 6</label></li>
 <li><input id="f_son_ids_7" name="f[son_ids][]" type="checkbox" value="7" /><label for="f_son_ids_7">Son 7</label></li></ul>
+<input name="f[son_ids][]" type="hidden" value="" />
 END
   end
   
@@ -458,6 +484,7 @@ END
 <li><input id="f_son_ids_5" name="f[son_ids][]" type="checkbox" value="5" /><label for="f_son_ids_5">Son 5</label></li>
 <li><input id="f_son_ids_6" name="f[son_ids][]" type="checkbox" value="6" /><label for="f_son_ids_6">Son 6</label></li>
 <li><input id="f_son_ids_7" name="f[son_ids][]" type="checkbox" value="7" /><label for="f_son_ids_7">Son 7</label></li></ul>
+<input name="f[son_ids][]" type="hidden" value="" />
 END
   end
   
@@ -466,6 +493,7 @@ END
     assert_dom_equal <<END.strip, tree_multiple_select('n', 'selected_none', nodes(:n32).children, :id, :name)
 <ul><li><input id="n_selected_none_11" name="n[selected_none][]" type="checkbox" value="11" /><label for="n_selected_none_11">Node 3.2.1</label></li>
 <li><input id="n_selected_none_12" name="n[selected_none][]" type="checkbox" value="12" /><label for="n_selected_none_12">Node 3.2.2</label></li></ul>
+<input name="n[selected_none][]" type="hidden" value="" />
 END
   end
 
@@ -474,6 +502,7 @@ END
     assert_dom_equal <<END.strip, tree_multiple_select('n', 'selected_none', nodes(:n32).children, :id, :name, :outer_class => 'test_class')
 <ul class="test_class"><li><input id="n_selected_none_11" name="n[selected_none][]" type="checkbox" value="11" /><label for="n_selected_none_11">Node 3.2.1</label></li>
 <li><input id="n_selected_none_12" name="n[selected_none][]" type="checkbox" value="12" /><label for="n_selected_none_12">Node 3.2.2</label></li></ul>
+<input name="n[selected_none][]" type="hidden" value="" />
 END
   end
   
@@ -482,19 +511,23 @@ END
     assert_dom_equal <<END.strip, tree_multiple_select('n', 'selected_some', nodes(:n32).children, :id, :name)
 <ul><li><input id="n_selected_some_11" name="n[selected_some][]" type="checkbox" value="11" /><label for="n_selected_some_11">Node 3.2.1</label></li>
 <li><input checked="checked" id="n_selected_some_12" name="n[selected_some][]" type="checkbox" value="12" /><label for="n_selected_some_12">Node 3.2.2</label></li></ul>
+<input name="n[selected_some][]" type="hidden" value="" />
 END
   end
   
   def test_tms_without_items
     @n = Node.new
-    assert_dom_equal "<ul></ul>",
-      tree_multiple_select('n', 'selected_some', nodes(:n33).children, :id, :name)
+    assert_dom_equal <<END.strip, tree_multiple_select('n', 'selected_some', nodes(:n33).children, :id, :name)
+<ul></ul>
+<input name="n[selected_some][]" type="hidden" value="" />
+END
   end
   
   def test_tmst
     assert_dom_equal <<END.strip, tree_multiple_select_tag('n', nodes(:n32).children, :id, :name)
 <ul><li><input id="n11" name="n[]" type="checkbox" value="11" /><label for="n11">Node 3.2.1</label></li>
 <li><input id="n12" name="n[]" type="checkbox" value="12" /><label for="n12">Node 3.2.2</label></li></ul>
+<input name="n[]" type="hidden" value="" />
 END
   end
 
@@ -502,6 +535,7 @@ END
     assert_dom_equal <<END.strip, tree_multiple_select_tag('n', nodes(:n32).children, :id, :name, :outer_class => 'test_class')
 <ul class="test_class"><li><input id="n11" name="n[]" type="checkbox" value="11" /><label for="n11">Node 3.2.1</label></li>
 <li><input id="n12" name="n[]" type="checkbox" value="12" /><label for="n12">Node 3.2.2</label></li></ul>
+<input name="n[]" type="hidden" value="" />
 END
   end
 
@@ -509,12 +543,15 @@ END
     assert_dom_equal <<END.strip, tree_multiple_select_tag('n', nodes(:n32).children, :id, :name, :selected_items => [12])
 <ul><li><input id="n11" name="n[]" type="checkbox" value="11" /><label for="n11">Node 3.2.1</label></li>
 <li><input checked="checked" id="n12" name="n[]" type="checkbox" value="12" /><label for="n12">Node 3.2.2</label></li></ul>
+<input name="n[]" type="hidden" value="" />
 END
   end
 
   def test_tmst_without_items
-    assert_dom_equal "<ul></ul>",
-      tree_multiple_select_tag('n', nodes(:n33).children, :id, :name)
+    assert_dom_equal <<END.strip, tree_multiple_select_tag('n', nodes(:n33).children, :id, :name)
+<ul></ul>
+<input name="n[]" type="hidden" value="" />
+END
   end
   
   def test_tms_selected_items
@@ -522,6 +559,7 @@ END
     assert_dom_equal <<END.strip, tree_multiple_select('n', 'selected_none', nodes(:n32).children, :id, :name, :selected_items => [11])
 <ul><li><input id="n_selected_none_11" name="n[selected_none][]" type="checkbox" value="11" checked="checked" /><label for="n_selected_none_11">Node 3.2.1</label></li>
 <li><input id="n_selected_none_12" name="n[selected_none][]" type="checkbox" value="12" /><label for="n_selected_none_12">Node 3.2.2</label></li></ul>
+<input name="n[selected_none][]" type="hidden" value="" />
 END
   end
   
@@ -530,6 +568,7 @@ END
     assert_dom_equal <<END.strip, tree_multiple_select('n', 'selected_none', nodes(:n32).children, :id, :name, :selected_items => nil)
 <ul><li><input id="n_selected_none_11" name="n[selected_none][]" type="checkbox" value="11" /><label for="n_selected_none_11">Node 3.2.1</label></li>
 <li><input id="n_selected_none_12" name="n[selected_none][]" type="checkbox" value="12" /><label for="n_selected_none_12">Node 3.2.2</label></li></ul>
+<input name="n[selected_none][]" type="hidden" value="" />
 END
   end
     

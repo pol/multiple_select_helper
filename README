@@ -100,6 +100,10 @@ following options:
 [+initial_level+] Specifies the first level that will be used as preffix of
                   +level_class+. The default is 0.
 
+There used to be an option called +include_hidden_field+ but now it is not
+more an option and is always enforced +true+ so you always get a param value
+in your controllers, even when the users check no checkbox.
+
 Since 20060917 version you could establish default option for some of the most
 used parameters (+outer_class+, +inner_class+, +level_class+, +alternate+,
 +alternate_class+, and +position+). To set the new default values of this
@@ -137,7 +141,7 @@ you could use something like:
  # In the view
  <%=
    collection_multiple_select(
-     'person', 'fruit_ids', Fruit.find(:all), :id, :name, :selected_items => @person.fruit_ids
+     'person', 'fruit_ids', Fruit.find(:all), :id, :name
    )
  %>
  
@@ -149,5 +153,6 @@ are editing.
 
 == Author
 
-Daniel Rodríguez Troitiño (drodrigueztroitino@yahoo.es): main programmer.
-Michael Schuerig (michael@schuering.de): some ideas.
+Daniel Rodríguez Troitiño (mailto:drodrigueztroitino@yahoo.es): main
+programmer.
+Michael Schuerig (mailto:michael@schuering.de): some ideas.

@@ -9,7 +9,6 @@ gem 'activerecord', '<1.15'
 gem 'activesupport', '<1.4'
 gem 'actionpack', '<1.13'
 
-
 require 'test/unit'
 require 'active_record'
 require 'active_record/fixtures'
