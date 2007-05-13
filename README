@@ -57,6 +57,9 @@ All three posibilites supports the following options in the options hash:
 [+selected_items+] Specifies an array of items that should be selected when
                    the list renders (only in the three main methods, the other
                    three use the +selected_items+ parameter instead).
+                   <tt>:selected_items</tt> array should be an array of values
+                   to be matched with the ones provided by
+                   <tt>value_method</tt>.
 [+inner_class+] Specifies the class of the li that wraps each checkbox.
 [+position+] Determines the position of the label besides the checkbox. The
              value should be <tt>:right</tt> or <tt>:left</tt>. The default is

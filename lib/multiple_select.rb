@@ -65,7 +65,8 @@ module FightTheMelons #:nodoc:
       # checkboxes.
       #
       # If a <tt>:selected_items</tt> option is provided it will be used as
-      # selection.
+      # selection. <tt>:selected_items</tt> array should be an array of values
+      # to be matched with the ones provided by <tt>value_method</tt>.
       #
       # The option <tt>:outer_class</tt> specifies the HTML class of the ul
       # element that wraps the checkbox list.
@@ -94,7 +95,8 @@ module FightTheMelons #:nodoc:
       # required format of the choices parameter.
       #
       # If a <tt>:selected_items</tt> option is provided it will be used as
-      # selection.
+      # selection. <tt>:selected_items</tt> array should be an array of values
+      # to be matched with the ones provided by <tt>value_method</tt>.
       #
       # The option <tt>:outer_class</tt> specifies the HTML class of the ul
       # element that wraps the checkbox list.
@@ -119,7 +121,8 @@ module FightTheMelons #:nodoc:
       # children of the actual node. The default value is <tt>children</tt>.
       #
       # If a <tt>:selected_items</tt> option is provided it will be used as
-      # selection.
+      # selection. <tt>:selected_items</tt> array should be an array of values
+      # to be matched with the ones provided by <tt>value_method</tt>.
       #
       # The option <tt>:outer_class</tt> specifies the HTML class of the ul
       # element that wraps the checkbox hierarchy.
