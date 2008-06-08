@@ -1,6 +1,3 @@
-require 'erb'
-require 'action_view'
-
 module FightTheMelons #:nodoc:
   module Helpers #:nodoc:
     
