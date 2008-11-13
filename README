@@ -155,6 +155,10 @@ are editing.
 
 == Version history
 
+- 20081111
+  - Rails 2.2.0 RC1 compatible
+- 20080608
+  - Rails 2.1.0 compatible
 - 20070409
   - The old hidden_field toggled by include_hidden_field is now always
     included (seems like is really needed in Rails 1.2).
