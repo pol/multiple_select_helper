@@ -1,13 +1,13 @@
-require 'rubygems'
-require 'active_support'
-require 'action_controller'
-require 'action_view'
-require File.join(File.dirname(__FILE__), '..', 'lib', 'multiple_select')
-require 'test/unit'
-require 'action_controller/assertions'
+ENV['RAILS_ENV'] = 'test'
+ENV['RAILS_ROOT'] ||= File.join(File.dirname(__FILE__), '..', '..', '..', '..')
 
-class MultipleSelectTest < Test::Unit::TestCase #:nodoc:
-  include FightTheMelons::Helpers::FormMultipleSelectHelper
+require 'test/unit'
+require File.expand_path(File.join(ENV['RAILS_ROOT'], 'config', 'environment'))
+
+require File.join(File.dirname(__FILE__), '..', 'lib', 'multiple_select')
+
+class MultipleSelectTest < ActionView::TestCase #:nodoc:
+  tests FightTheMelons::Helpers::FormMultipleSelectHelper
   
   class Father
     def son_ids=(v)
@@ -180,18 +180,18 @@ END
   
   def test_cfms_hash_with_selected
     assert_dom_equal <<END.strip, checkboxes_for_multiple_select('name', { 'Spain' => 'esp', 'England' => 'eng' }, ['esp'])
-<li><input checked="checked" id="nameesp" name="name[]" type="checkbox" value="esp" /><label for="nameesp">Spain</label></li>
 <li><input id="nameeng" name="name[]" type="checkbox" value="eng" /><label for="nameeng">England</label></li>
+<li><input checked="checked" id="nameesp" name="name[]" type="checkbox" value="esp" /><label for="nameesp">Spain</label></li>
 END
       
     assert_dom_equal <<END.strip, checkboxes_for_multiple_select('name', { 'Spain' => 'esp', 'England' => 'eng' }, ['eng'])
-<li><input id="nameesp" name="name[]" type="checkbox" value="esp" /><label for="nameesp">Spain</label></li>
 <li><input checked="checked" id="nameeng" name="name[]" type="checkbox" value="eng" /><label for="nameeng">England</label></li>
+<li><input id="nameesp" name="name[]" type="checkbox" value="esp" /><label for="nameesp">Spain</label></li>
 END
 
     assert_dom_equal <<END.strip, checkboxes_for_multiple_select('name', { 'Spain' => 'esp', 'England' => 'eng' }, ['esp', 'eng'])
-<li><input checked="checked" id="nameesp" name="name[]" type="checkbox" value="esp" /><label for="nameesp">Spain</label></li>
 <li><input checked="checked" id="nameeng" name="name[]" type="checkbox" value="eng" /><label for="nameeng">England</label></li>
+<li><input checked="checked" id="nameesp" name="name[]" type="checkbox" value="esp" /><label for="nameesp">Spain</label></li>
 END
   end
   
